@@ -4,11 +4,17 @@ try {
     let data = fs.readFileSync('test_code.py', 'utf8');
     let lines = data.toString().split('\r\n');
 
+    console.log(lines);
+
     let nodes = {}
 
-    const calledFuncRegex = /(?<calledFunction>[A-Za-z_]*)\(/;
-    const funcNameRegex = /def (?<functionName>[A-Za-z_]*)/;
-
+    const classNameRegex = /^class (?<className>[A-Za-z_]+):/;
+    const funcNameRegex = /^def (?<functionName>[A-Za-z_]+)/;
+    const methodNameRegex = /\s+def (?<methodName>[A-Za-z_]+)/;
+    const calledFuncRegex = /(?<calledFunction>[A-Za-z_]+)\(/;
+    
+    let withinClass = false;
+    let currentClass = null;
     let withinFunction = false;
     let currentFunction = null;
     for (let index in lines) {
@@ -24,18 +30,44 @@ try {
         // Look for a called function
         let found = line.match(calledFuncRegex);
         if (found != null) {
-          console.log(found.groups.calledFunction);
-          nodes[currentFunction].push(found.groups.calledFunction);
+          if (currentClass == null) {
+            nodes[currentFunction].push(found.groups.calledFunction);
+          } else {
+            nodes[currentClass + '.' + currentFunction].push(found.groups.calledFunction);
+          }
         }
 
       } else {
-        // Look for a function definition
-        let found = line.match(funcNameRegex);
+        // Look for class definition
+        let found = line.match(classNameRegex);
         if (found != null) {
-          console.log(found.groups.functionName);
+          currentClass = found.groups.className;
+          withinClass = true;
+          continue;
+        }
+
+        // Look for a method definition
+        if (withinClass) {
+          let found = line.match(methodNameRegex);
+          if (found != null) {
+            currentFunction = found.groups.methodName;
+            nodes[currentClass + '.' + currentFunction] = []
+            withinFunction = true;
+          }
+        }
+
+        // Look for a function definition
+        found = line.match(funcNameRegex);
+        if (found != null) {
           currentFunction = found.groups.functionName;
           nodes[currentFunction] = []
           withinFunction = true;
+          // If we've found a non-indented function definition 
+          // and we were within within a class -> no longer within that class
+          if (withinClass) {
+            currentClass = null;
+            withinClass = false;
+          }
         }
       }
     }
