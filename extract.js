@@ -5,12 +5,46 @@ const funcNameRegex = /^def (?<functionName>[A-Za-z_]+)/;
 const methodNameRegex = /\s+def (?<methodName>[A-Za-z_]+)/;
 const calledFuncRegex = /(?<calledFunction>[A-Za-z0-9_.]*[A-Za-z_]+)\(/;
 
+function collectImports(lines) {
+  let file_imports = {'importOrigin': {}, 'simpleImports': [], 'aliases': {}}
+  const fromImport = /from (?<origin>.*) import (?<import>.*)/
+  const aliasImport = /import (?<import>.*) as (?<alias>.*)/
+  const simpleImport = /^import (?<import>.[a-z0-9_.-]+)/
+
+  let found = null;
+  for (let line of lines) {
+    found = line.match(fromImport);
+    if (found != null) {
+      let imports = found.groups.import.split(', ');
+      for (let im of imports) {
+        file_imports['importOrigin'][im] = found.groups.origin;
+      }
+    }
+
+    found = line.match(simpleImport);
+    if (found != null) {
+      let imports = found.groups.import.split(', ');
+      for (let im of imports) {
+        file_imports['simpleImports'].push(im);
+      }
+    }
+
+    found = line.match(aliasImport);
+    if (found != null) {
+      file_imports['aliases'][found.groups.import] = found.groups.alias;
+    }
+  }
+
+  return file_imports;
+}
+
 function run() {
-  try {  
-      let data = fs.readFileSync('test_code.py', 'utf8');
+  try {
+      let data = fs.readFileSync('data.py', 'utf8');
       let lines = data.toString().split('\r\n');
 
-      console.log(lines);
+      let file_imports = collectImports(lines);
+      console.log(file_imports);
 
       let nodes = {}
       
@@ -77,6 +111,29 @@ function run() {
           }
         }
       }
+      
+      // Replace self with class name
+      const regEx = /(.)+\./
+      for (let func in nodes) {
+        let calledFuncs = nodes[func];
+        let funcClass = func.match(regEx);
+        if (funcClass != null) {
+          for (const calledFunc of calledFuncs) {
+            nodes[func] = calledFunc.replace('self.', funcClass[0])
+          } 
+        }
+      }
+
+      // Replace imports with aliases
+      // for (let func in nodes) {
+      //   let calledFuncs = nodes[func];
+      //   let funcClass = func.match(regEx);
+      //   if (funcClass != null) {
+      //     for (const calledFunc of calledFuncs) {
+      //       nodes[func] = calledFunc.replace('self.', funcClass[0])
+      //     } 
+      //   }
+      // }
 
       console.log(nodes);
   } catch(e) {
