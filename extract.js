@@ -82,14 +82,88 @@ function test(nodes) {
   console.log('Accuracy:', accuracy*100, '%');
 }
 
+function lookForDefinition(regex, line, stack, currentIndent, indentSize) {
+  let found = line.match(regex);
+  if (found != null) {
+    let indent = lineIndent(line, indentSize);
+
+    currentIndent = adjustIndentation(indent, currentIndent, stack);
+
+    stack.push({
+      'type': 'class',
+      'name': found.groups.name
+    })
+  }
+  return currentIndent
+}
+
+function getCalledFunctions(line) {
+  const calledFuncRegex = /(?<calledFunction>[A-Za-z0-9_.\'\[\]]*[A-Za-z_]+)\(/;
+  // const calledFuncRegex = /(?<calledFunction>([a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?))/;
+  return [...line.matchAll(calledFuncRegex)];
+}
+
+function insertCalledFunctions(line, nodes, stack, file) {
+  let found = getCalledFunctions(line);
+  if (found.length > 0) {
+    for (let i = 0; i < found.length; i++) {
+      let func = '';
+      for (let s of stack) {
+        func += '.' + s.name;
+      }
+      func = file + func;
+      if (!(func in nodes)) {
+        nodes[func] = []
+      }
+      nodes[func].push(found[i].groups.calledFunction)
+    }
+  }
+}
+
+function emptyParentesis(calledFunc) {
+  let openIdxs = [];
+  let closeIdxs = [];
+  for (let i in calledFunc) {
+    if (calledFunc[i] == '(') {
+      openIdxs.push(i);
+    }
+    else if (calledFunc[i] == ')') {
+      closeIdxs.push(i);
+    }
+  }
+
+  let newCalledFunc = null;
+  if (openIdxs.length == closeIdxs.length) {
+    if (openIdxs[0] != closeIdxs[0]+1) {
+      newCalledFunc = calledFunc.slice(0, Number(openIdxs[0])+1) + calledFunc.slice(Number(closeIdxs[closeIdxs.length-1]))
+    }
+  } else {
+    console.log('Error:', calledFunc);
+  }
+  return newCalledFunc;
+}
+
+function cleanNodes(nodes) {
+  for (let func in nodes) {
+    for (let i in nodes[func]) {
+      nodes[func][i] = emptyParentesis(nodes[func][i])
+    }
+  }
+}
+
+function collected(nodes) {
+  let count = 0
+  for (let func in nodes) {
+    count += nodes[func].length;
+  }
+  return count;
+}
+
 function runFile(filename) {
   let file = filename.replace('.py', '')
 
-  const classNameRegex = /class (?<className>[A-Za-z_]+)(\(.*\))?:/;
-  const funcNameRegex = /def (?<functionName>[A-Za-z_]+)/;
-  // const calledFuncRegex = /(?<calledFunction>[A-Za-z0-9_.\'\[\]]*[A-Za-z_]+)\(/;
-  const calledFuncRegex = /(?<calledFunction>([a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?))/;
-
+  const classNameRegex = /class (?<name>[A-Za-z_]+)(\(.*\))?:/;
+  const funcNameRegex = /def (?<name>[A-Za-z_]+)/;
 
   try {
     let data = fs.readFileSync(filename, 'utf8');
@@ -103,58 +177,26 @@ function runFile(filename) {
     let stack = [{'type': 'global', 'name': 'global'}]
     let indentSize = 4  // Spaces
     let currentIndent = 0;
-    let found = null;
     for (let index in lines) {
       let line = lines[index];
 
       // Look for class definition
-      found = line.match(classNameRegex);
-      if (found != null) {
-        let indent = lineIndent(line, indentSize);
-
-        currentIndent = adjustIndentation(indent, currentIndent, stack);
-
-        stack.push({
-          'type': 'class',
-          'name': found.groups.className
-        })
-        continue;
-      }
-
+      currentIndent = lookForDefinition(classNameRegex, line, stack, currentIndent, indentSize);
+      
       // Look for function definition
-      found = line.match(funcNameRegex);
-      if (found != null) {
-        let indent = lineIndent(line, indentSize);
-
-        currentIndent = adjustIndentation(indent, currentIndent, stack);
-
-        stack.push({
-          'type': 'function',
-          'name': found.groups.functionName
-        })
-        continue;
-      }
+      currentIndent = lookForDefinition(funcNameRegex, line, stack, currentIndent, indentSize);
 
       // Look for a called function
-      found = [...line.matchAll(calledFuncRegex)];
-      if (found.length > 0) {
-        for (let i = 0; i < found.length; i++) {
-          let func = '';
-          for (let s of stack) {
-            func += '.' + s.name;
-          }
-          func = file + func;
-          if (!(func in nodes)) {
-            nodes[func] = []
-          }
-          nodes[func].push(found[i].groups.calledFunction)
-        }
-      }
+      insertCalledFunctions(line, nodes, stack, file);
+    
     }
-    console.log(nodes)
+    
+    cleanNodes(nodes);
 
+    console.log('Functions collected:', collected(nodes))
+    
+    console.log(nodes);
     test(nodes);
-
 } catch (e) {
     console.log('Error:', e.stack);
 }
