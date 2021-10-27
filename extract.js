@@ -1,9 +1,5 @@
 const fs = require('fs');
 
-const classNameRegex = /^class (?<className>[A-Za-z_]+):/;
-const funcNameRegex = /^def (?<functionName>[A-Za-z_]+)/;
-const methodNameRegex = /\s+def (?<methodName>[A-Za-z_]+)/;
-const calledFuncRegex = /(?<calledFunction>[A-Za-z0-9_.]*[A-Za-z_]+)\(/;
 
 function collectImports(lines) {
   let file_imports = {'importOrigin': {}, 'simpleImports': [], 'aliases': {}}
@@ -38,107 +34,134 @@ function collectImports(lines) {
   return file_imports;
 }
 
-function run() {
-  try {
-      let data = fs.readFileSync('data.py', 'utf8');
-      let lines = data.toString().split('\r\n');
-
-      let file_imports = collectImports(lines);
-      console.log(file_imports);
-
-      let nodes = {}
-      
-      let withinClass = false;
-      let currentClass = null;
-      let withinFunction = false;
-      let currentFunction = null;
-      for (let index in lines) {
-        let line = lines[index];
-
-        if (withinFunction) {
-          // If function has finished
-          if (line == '') {
-            withinFunction = false;
-            currentFunction = null;
-            continue
-          }
-
-          // Look for a called function
-          let found = line.match(calledFuncRegex);
-          if (found != null) {
-            let calledFunction = found.groups.calledFunction + '()'
-            
-            let functionID = currentFunction
-            if (currentClass != null) {
-              functionID = currentClass + '.' + currentFunction
-            }
-
-            nodes[functionID].push(calledFunction);
-          }
-        } else {
-          // Look for class definition
-          let found = line.match(classNameRegex);
-          if (found != null) {
-            currentClass = found.groups.className;
-            withinClass = true;
-            continue;
-          }
-
-          // Look for a method definition
-          if (withinClass) {
-            let found = line.match(methodNameRegex);
-            if (found != null) {
-              currentFunction = found.groups.methodName;
-              nodes[currentClass + '.' + currentFunction] = []
-              withinFunction = true;
-            }
-          }
-          // Even if withinClass, we need to continue and check for a function 
-          // definition to check whether we have exited the current class 
-
-          // Look for a function definition
-          found = line.match(funcNameRegex);
-          if (found != null) {
-            currentFunction = found.groups.functionName;
-            nodes[currentFunction] = []
-            withinFunction = true;
-            // If we've found a non-indented function definition 
-            // and we were within within a class -> no longer within that class
-            if (withinClass) {
-              currentClass = null;
-              withinClass = false;
-            }
-          }
-        }
-      }
-      
-      // Replace self with class name
-      const regEx = /(.)+\./
-      for (let func in nodes) {
-        let calledFuncs = nodes[func];
-        let funcClass = func.match(regEx);
-        if (funcClass != null) {
-          for (const calledFunc of calledFuncs) {
-            nodes[func] = calledFunc.replace('self.', funcClass[0])
-          } 
-        }
-      }
-
-      // Replace imports with aliases
-      // for (let func in nodes) {
-      //   let calledFuncs = nodes[func];
-      //   let funcClass = func.match(regEx);
-      //   if (funcClass != null) {
-      //     for (const calledFunc of calledFuncs) {
-      //       nodes[func] = calledFunc.replace('self.', funcClass[0])
-      //     } 
-      //   }
-      // }
-
-      console.log(nodes);
-  } catch(e) {
-      console.log('Error:', e.stack);
+function lineIndent(line, indentSize) {
+  let spaces = line.match(/^([\s]+)/);
+  if (spaces != null) {
+    indent = spaces[0].length / indentSize;
+  } else {
+    indent = 0;
   }
+  return indent;
+}
+
+function adjustIndentation(indent, currentIndent, stack) {
+  if (indent < currentIndent) {
+    let diff = currentIndent - indent;
+    for (let i = 0; i < diff; i++) {
+      stack.pop();
+      currentIndent -= 1;
+    }
+    currentIndent += 1;
+  } else if (indent+1 == currentIndent) {
+    stack.pop();
+  } else {
+    currentIndent += 1
+  }
+  return currentIndent;
+}
+
+function test(nodes) {
+  data_py_test = {
+    'data.global': 1,
+    'data.global.DF.__init__': 1,
+    'data.global.DF.__str__': 1,
+    'data.global.DF.save_to_html': 3,
+    'data.global.Fixtures.__init__': 1,
+
+  }
+
+  let correct = 0
+  let total = 0
+  for (let key in data_py_test) {
+    if (nodes[key].length == data_py_test[key]) {
+      correct += 1;
+    }
+    total += 1;
+  }
+  let accuracy = correct / total;
+  console.log('Accuracy:', accuracy*100, '%');
+}
+
+function runFile(filename) {
+  let file = filename.replace('.py', '')
+
+  const classNameRegex = /class (?<className>[A-Za-z_]+)(\(.*\))?:/;
+  const funcNameRegex = /def (?<functionName>[A-Za-z_]+)/;
+  // const calledFuncRegex = /(?<calledFunction>[A-Za-z0-9_.\'\[\]]*[A-Za-z_]+)\(/;
+  const calledFuncRegex = /(?<calledFunction>([a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?))/;
+
+
+  try {
+    let data = fs.readFileSync(filename, 'utf8');
+    let lines = data.toString().split('\r\n');
+
+    let fileImports = collectImports(lines);
+    console.log(fileImports);
+
+    let nodes = {}
+
+    let stack = [{'type': 'global', 'name': 'global'}]
+    let indentSize = 4  // Spaces
+    let currentIndent = 0;
+    let found = null;
+    for (let index in lines) {
+      let line = lines[index];
+
+      // Look for class definition
+      found = line.match(classNameRegex);
+      if (found != null) {
+        let indent = lineIndent(line, indentSize);
+
+        currentIndent = adjustIndentation(indent, currentIndent, stack);
+
+        stack.push({
+          'type': 'class',
+          'name': found.groups.className
+        })
+        continue;
+      }
+
+      // Look for function definition
+      found = line.match(funcNameRegex);
+      if (found != null) {
+        let indent = lineIndent(line, indentSize);
+
+        currentIndent = adjustIndentation(indent, currentIndent, stack);
+
+        stack.push({
+          'type': 'function',
+          'name': found.groups.functionName
+        })
+        continue;
+      }
+
+      // Look for a called function
+      found = [...line.matchAll(calledFuncRegex)];
+      if (found.length > 0) {
+        for (let i = 0; i < found.length; i++) {
+          let func = '';
+          for (let s of stack) {
+            func += '.' + s.name;
+          }
+          func = file + func;
+          if (!(func in nodes)) {
+            nodes[func] = []
+          }
+          nodes[func].push(found[i].groups.calledFunction)
+        }
+      }
+    }
+    console.log(nodes)
+
+    test(nodes);
+
+} catch (e) {
+    console.log('Error:', e.stack);
+}
+}
+
+function run() {
+  runFile('data.py');
 }
 
 run()
