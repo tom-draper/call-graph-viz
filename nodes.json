@@ -1,0 +1,537 @@
+{
+    "./code/data.global": [
+        "Utilities"
+    ],
+    "./code/data.global.DF.__init__": [
+        "__init__",
+        "DataFrame"
+    ],
+    "./code/data.global.DF.__str__": [
+        "__str__",
+        "str"
+    ],
+    "./code/data.global.DF.save_to_html": [
+        "save_to_html",
+        "self.df.to_html",
+        "open",
+        "f.write"
+    ],
+    "./code/data.global.Fixtures": [
+        "Fixtures"
+    ],
+    "./code/data.global.Fixtures.__init__": [
+        "__init__",
+        "super"
+    ],
+    "./code/data.global.Fixtures.update": [
+        "update",
+        "print",
+        "defaultdict",
+        "sorted",
+        "pd.DataFrame",
+        "defaultdict",
+        "matchdays.append",
+        "].append",
+        "].append",
+        "].append",
+        "].append",
+        "].append",
+        "team_names.append",
+        "].append",
+        "].append",
+        "].append",
+        "].append",
+        "].append",
+        "team_names.append",
+        "pd.DataFrame",
+        "matchdays.append",
+        "pd.concat",
+        "print"
+    ],
+    "./code/data.global.TeamRatings": [
+        "TeamRatings"
+    ],
+    "./code/data.global.TeamRatings.__init__": [
+        "__init__",
+        "super"
+    ],
+    "./code/data.global.TeamRatings.calc_rating": [
+        "calc_rating"
+    ],
+    "./code/data.global.TeamRatings.get_season_weightings": [
+        "get_season_weightings",
+        "np.array",
+        "list"
+    ],
+    "./code/data.global.TeamRatings.calc_total_rating_col": [
+        "calc_total_rating_col",
+        "self.get_season_weightings",
+        "self.get_season_weightings",
+        "range"
+    ],
+    "./code/data.global.TeamRatings.update": [
+        "update",
+        "print",
+        "ValueError",
+        "pd.DataFrame",
+        "range",
+        "standings.df.iterrows",
+        "range",
+        "self.calc_rating",
+        "team_ratings[col].replace",
+        "range",
+        "YAgo'].min",
+        "YAgo'].max",
+        "YAgo'].min",
+        ".all",
+        "print",
+        "self.calc_total_rating_col",
+        "team_ratings.sort_values",
+        "team_ratings.rename",
+        "print"
+    ],
+    "./code/data.global.Form": [
+        "Form"
+    ],
+    "./code/data.global.Form.__init__": [
+        "__init__",
+        "super"
+    ],
+    "./code/data.global.Form.get_current_matchday": [
+        "get_current_matchday",
+        "len",
+        "list",
+        "ValueError"
+    ],
+    "./code/data.global.Form.get_prev_matchday": [
+        "get_prev_matchday",
+        "len",
+        "list",
+        "ValueError"
+    ],
+    "./code/data.global.Form.n_should_have_played": [
+        "n_should_have_played"
+    ],
+    "./code/data.global.Form.not_played_current_matchday": [
+        "not_played_current_matchday",
+        "self.n_should_have_played",
+        "len"
+    ],
+    "./code/data.global.Form.get_form": [
+        "get_form",
+        "self.get_current_matchday",
+        "self.not_played_current_matchday",
+        "list",
+        "list",
+        "len"
+    ],
+    "./code/data.global.Form.get_recent_teams_played": [
+        "get_recent_teams_played",
+        "self.get_current_matchday",
+        "self.not_played_current_matchday",
+        "list",
+        "DataFrame"
+    ],
+    "./code/data.global.Form.get_current_form_rating": [
+        "get_current_form_rating",
+        "self.get_current_matchday",
+        "self.not_played_current_matchday",
+        "self.get_prev_matchday",
+        ".round"
+    ],
+    "./code/data.global.Form.get_won_against_star_team": [
+        "get_won_against_star_team",
+        "self.get_current_matchday",
+        "self.not_played_current_matchday",
+        "list"
+    ],
+    "./code/data.global.Form.get_recent_form": [
+        "get_recent_form",
+        "self.get_form",
+        "self.get_recent_teams_played",
+        "self.get_current_form_rating",
+        "self.get_won_against_star_team"
+    ],
+    "./code/data.global.Form.form_string": [
+        "form_string",
+        "zip",
+        "util.extract_str_score",
+        "int",
+        "int",
+        "form.append",
+        "form.append",
+        "form.append",
+        "''.join"
+    ],
+    "./code/data.global.Form.calc_form_rating": [
+        "calc_form_rating",
+        "form_str.replace",
+        "enumerate",
+        "util.convert_team_name_or_initials",
+        "len",
+        "len",
+        "len"
+    ],
+    "./code/data.global.Form.calc_won_against_star_team_col": [
+        "calc_won_against_star_team_col",
+        "zip",
+        "won_against_star_team_col.append",
+        "zip"
+    ],
+    "./code/data.global.Form.calc_played_star_team_col": [
+        "calc_played_star_team_col",
+        "list",
+        "played_star_team_col.append"
+    ],
+    "./code/data.global.Form.calc_form_rating_col": [
+        "calc_form_rating_col",
+        "zip",
+        "self.calc_form_rating",
+        "form_rating_col.append"
+    ],
+    "./code/data.global.Form.calc_form_str_and_gd_cols": [
+        "calc_form_str_and_gd_cols",
+        "zip",
+        "form_str_col.append",
+        "zip",
+        "util.extract_str_score",
+        "int",
+        "gds.append",
+        "gds.append",
+        "gds.append",
+        "gds_col.append"
+    ],
+    "./code/data.global.Form.last_n_games": [
+        "last_n_games",
+        "len",
+        "list",
+        "len",
+        "range",
+        "len",
+        "len",
+        "list"
+    ],
+    "./code/data.global.Form.last_n_games_cols": [
+        "last_n_games_cols",
+        "matchday_dates[len",
+        "fixtures.df.iterrows",
+        "slice",
+        "slice",
+        "slice",
+        "slice",
+        "list",
+        "sorted",
+        "self.last_n_games",
+        "teams_played_col.append",
+        "scores_col.append",
+        "at_home_col.append",
+        "[list"
+    ],
+    "./code/data.global.Form.update": [
+        "update",
+        "print",
+        "ValueError",
+        "ValueError",
+        "slice",
+        "score.replace",
+        "sorted",
+        "self.last_n_games_cols",
+        "self.calc_form_str_and_gd_cols",
+        "self.calc_form_rating_col",
+        "self.calc_played_star_team_col",
+        "self.calc_won_against_star_team_col",
+        "pd.DataFrame.from_dict",
+        "print"
+    ],
+    "./code/data.global.Standings": [
+        "Standings"
+    ],
+    "./code/data.global.Standings.__init__": [
+        "__init__",
+        "super"
+    ],
+    "./code/data.global.Standings.get_position": [
+        "get_position"
+    ],
+    "./code/data.global.Standings.get_table_snippet": [
+        "get_table_snippet",
+        "self.df.index.get_loc",
+        "rows.index.values.tolist",
+        "list",
+        "rows.index.get_loc",
+        "rows.values.tolist",
+        "zip",
+        "row_list.insert"
+    ],
+    "./code/data.global.Standings.fill_rows_from_data": [
+        "fill_rows_from_data",
+        "match['homeTeam']['name'].replace",
+        "match['awayTeam']['name'].replace"
+    ],
+    "./code/data.global.Standings.add_gd_col": [
+        "add_gd_col",
+        "df_rows.keys"
+    ],
+    "./code/data.global.Standings.add_position_col": [
+        "add_position_col",
+        "enumerate"
+    ],
+    "./code/data.global.Standings.season_standings_from_fixtures": [
+        "season_standings_from_fixtures",
+        "self.fill_rows_from_data",
+        "self.add_gd_col",
+        "dict",
+        "self.add_position_col",
+        "pd.DataFrame.from_dict",
+        "pd.MultiIndex.from_product",
+        "df.drop"
+    ],
+    "./code/data.global.Standings.season_standings": [
+        "season_standings",
+        "pd.DataFrame",
+        "pd.Series",
+        "df.pop",
+        "df.insert",
+        "pd.MultiIndex.from_product",
+        "df.drop"
+    ],
+    "./code/data.global.Standings.update": [
+        "update",
+        "print",
+        "ValueError",
+        "pd.DataFrame",
+        "range",
+        "self.season_standings",
+        "pd.concat",
+        "standings.fillna",
+        "print"
+    ],
+    "./code/data.global.SeasonStats": [
+        "SeasonStats"
+    ],
+    "./code/data.global.SeasonStats.__init__": [
+        "__init__",
+        "super"
+    ],
+    "./code/data.global.SeasonStats.format_position": [
+        "format_position",
+        "str"
+    ],
+    "./code/data.global.SeasonStats.get_stat": [
+        "get_stat",
+        "self.df[col_heading].sort_values",
+        "self.format_position"
+    ],
+    "./code/data.global.SeasonStats.get_season_stats": [
+        "get_season_stats",
+        "self.get_stat",
+        "self.get_stat",
+        "self.get_stat"
+    ],
+    "./code/data.global.SeasonStats.row_season_goals": [
+        "row_season_goals",
+        "type",
+        "util.extract_int_score"
+    ],
+    "./code/data.global.SeasonStats.update": [
+        "update",
+        "print",
+        "ValueError",
+        "list",
+        "position_over_time.df.iterrows",
+        "self.row_season_goals",
+        "round",
+        "round",
+        "round",
+        "pd.DataFrame.from_dict",
+        "print"
+    ],
+    "./code/data.global.PositionOverTime": [
+        "PositionOverTime"
+    ],
+    "./code/data.global.PositionOverTime.__init__": [
+        "__init__",
+        "super"
+    ],
+    "./code/data.global.PositionOverTime.get_gd_and_pts": [
+        "get_gd_and_pts",
+        "type",
+        "util.extract_int_score"
+    ],
+    "./code/data.global.PositionOverTime.goal_diff_and_pts_cols": [
+        "goal_diff_and_pts_cols",
+        "matchday_col.iterrows",
+        "self.get_gd_and_pts",
+        "gd_col.append",
+        "pts_col.append"
+    ],
+    "./code/data.global.PositionOverTime.update": [
+        "update",
+        "print",
+        "ValueError",
+        "ValueError",
+        "pd.DataFrame",
+        "slice",
+        "slice",
+        "slice",
+        "score.replace",
+        "date[list",
+        "at_home[list",
+        "pd.concat",
+        "sorted",
+        "enumerate",
+        "self.goal_diff_and_pts_cols",
+        "position_over_time.sort_values",
+        "position_over_time.reindex",
+        "np.arange",
+        "position_over_time.reindex",
+        "print"
+    ],
+    "./code/data.global.HomeAdvantages": [
+        "HomeAdvantages"
+    ],
+    "./code/data.global.HomeAdvantages.__init__": [
+        "__init__",
+        "super"
+    ],
+    "./code/data.global.HomeAdvantages.home_advantages_for_season": [
+        "home_advantages_for_season",
+        "match['homeTeam']['name'].replace",
+        "match['awayTeam']['name'].replace"
+    ],
+    "./code/data.global.HomeAdvantages.create_season_home_advantage_col": [
+        "create_season_home_advantage_col"
+    ],
+    "./code/data.global.HomeAdvantages.create_total_home_advantage_col": [
+        "create_total_home_advantage_col",
+        "home_advantages.columns.get_level_values",
+        ".all",
+        "print",
+        "list",
+        "home_advantages_cols.drop",
+        "home_advantages.sort_index",
+        "home_advantages_cols.mean",
+        "home_advantages.sort_values"
+    ],
+    "./code/data.global.HomeAdvantages.row_template": [
+        "row_template",
+        "range",
+        "template.update"
+    ],
+    "./code/data.global.HomeAdvantages.update": [
+        "update",
+        "print",
+        "defaultdict",
+        "range",
+        "self.home_advantages_for_season",
+        "pd.DataFrame.from_dict",
+        "home_advantages.dropna",
+        "home_advantages.fillna",
+        "range",
+        "self.create_season_home_advantage_col",
+        "self.create_total_home_advantage_col",
+        "print"
+    ],
+    "./code/data.global.Upcoming": [
+        "Upcoming"
+    ],
+    "./code/data.global.Upcoming.__init__": [
+        "__init__",
+        "super",
+        "Predictions"
+    ],
+    "./code/data.global.Upcoming.get_opposition": [
+        "get_opposition"
+    ],
+    "./code/data.global.Upcoming.get_previous_matches": [
+        "get_previous_matches"
+    ],
+    "./code/data.global.Upcoming.get_at_home": [
+        "get_at_home"
+    ],
+    "./code/data.global.Upcoming.get_details": [
+        "get_details",
+        "self.get_opposition",
+        "self.get_at_home",
+        "self.get_previous_matches"
+    ],
+    "./code/data.global.Upcoming.get_next_game": [
+        "get_next_game",
+        "fixtures.df.columns.unique"
+    ],
+    "./code/data.global.Upcoming.get_next_game_prediction": [
+        "get_next_game_prediction",
+        "util.convert_team_name_or_initials",
+        "util.convert_team_name_or_initials",
+        "util.convert_team_name_or_initials",
+        "util.convert_team_name_or_initials"
+    ],
+    "./code/data.global.Upcoming.get_next_game_prediction_scoreline": [
+        "get_next_game_prediction_scoreline",
+        "self.get_next_game_prediction"
+    ],
+    "./code/data.global.Upcoming.game_result_tuple": [
+        "game_result_tuple"
+    ],
+    "./code/data.global.Upcoming.append_prev_match": [
+        "append_prev_match",
+        "self.readable_date",
+        "next_games[home_team]['PreviousMatches'].append",
+        "next_games[away_team]['PreviousMatches'].append"
+    ],
+    "./code/data.global.Upcoming.ord": [
+        "ord",
+        "str"
+    ],
+    "./code/data.global.Upcoming.readable_date": [
+        "readable_date",
+        "datetime.strptime",
+        "self.ord",
+        "dt.date"
+    ],
+    "./code/data.global.Upcoming.convert_to_readable_dates": [
+        "convert_to_readable_dates",
+        "next_games.items",
+        "enumerate",
+        "self.readable_date"
+    ],
+    "./code/data.global.Upcoming.sort_prev_matches_by_date": [
+        "sort_prev_matches_by_date",
+        "next_games.items",
+        "sorted"
+    ],
+    "./code/data.global.Upcoming.append_season_prev_matches": [
+        "append_season_prev_matches",
+        "ValueError",
+        "match['homeTeam']['name'].replace",
+        "match['awayTeam']['name'].replace",
+        "self.game_result_tuple",
+        "self.append_prev_match"
+    ],
+    "./code/data.global.Upcoming.update": [
+        "update",
+        "print",
+        "ValueError",
+        "ValueError",
+        "self.get_next_game",
+        "range",
+        "self.append_season_prev_matches",
+        "self.sort_prev_matches_by_date",
+        "pd.DataFrame.from_dict",
+        "self.predictions.update",
+        "pd.concat",
+        "print"
+    ],
+    "./code/data.global.Data.__init__": [
+        "__init__",
+        "field",
+        "Fixtures",
+        "Standings",
+        "TeamRatings",
+        "HomeAdvantages",
+        "Form",
+        "PositionOverTime",
+        "Upcoming",
+        "SeasonStats"
+    ]
+}

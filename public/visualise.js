@@ -1,8 +1,43 @@
 function onLoad(nodes) {
-  console.log(nodes)
-  var graphGenerator = Viva.Graph.generator()
-  var graph = graphGenerator.path(10)
+
+  // var graphGenerator = Viva.Graph.generator()
+  var graph = Viva.Graph.graph()
+  // var graph = graphGenerator.path(10)
   var container = document.body
+
+  
+  // Create nodes
+  let nodeIds = {}
+  let id = 0
+  for (const func in nodes) {
+    // Add defined function as node
+    console.log(func)
+    graph.addNode(id, {name: func})
+    nodeIds[func] = id
+    id += 1
+
+    // Add any new called functions as nodes
+    for (const calledFunc of nodes[func]) {
+      if (!(calledFunc in nodeIds)) {
+        graph.addNode(id, {name: calledFunc})
+        nodeIds[calledFunc] = id
+        id += 1
+      }
+    }
+  }
+
+  console.log(nodeIds)
+
+  // Connect nodes
+  for (const func in nodes) {
+    // Add any new called functions as nodes
+    for (const calledFunc of nodes[func]) {
+      console.log(nodeIds[func], nodeIds[calledFunc])
+      graph.addLink(nodeIds[func], nodeIds[calledFunc])
+    }
+  }
+
+  console.log(graph);
 
   // first we generate DOM label for each graph node. Be cautious
   // here, since for large graphs with more than 1k nodes, this will
@@ -51,7 +86,7 @@ function onLoad(nodes) {
     graph.forEachNode(function (node) {
       var label = document.createElement('span')
       label.classList.add('node-label')
-      label.innerText = node.id
+      label.innerText = node.data.name
       labels[node.id] = label
       container.appendChild(label)
     })
