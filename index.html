@@ -3,8 +3,20 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Example</title>
-    <script src="./public/visualise.js"></script>
-    <script src="./public/VivaGraphJS/dist/vivagraph.js"></script>
+    <style type="text/css">
+      #mynetwork {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+      }
+      body {
+        margin: 0;
+      }
+  </style>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
+    ></script>
     <script>
       const loadJSON = (callback) => {
         const xObj = new XMLHttpRequest()
@@ -21,8 +33,77 @@
       const init = () => {
         loadJSON((response) => {
           const json = JSON.parse(response)
-          onLoad(json)
+          onLoad(json);
         })
+      }
+
+      function onLoad(funcMap) {
+        // Create nodes
+        let nodeIds = {}
+        let id = 0
+        let n = []
+        for (const func in funcMap) {
+          // Add defined function as node
+          n.push({'id': id, 'label': func})
+          nodeIds[func] = id
+          id += 1
+
+          // Add any new called functions as nodes
+          for (const calledFunc of funcMap[func]) {
+            if (!(calledFunc in nodeIds)) {
+              n.push({'id': id, 'label': calledFunc})
+              nodeIds[calledFunc] = id
+              id += 1
+            }
+          }
+        }
+
+        var nodes = new vis.DataSet(n);
+
+        let e = []
+        // Connect nodes
+        for (const func in funcMap) {
+          // Add any new called functions as nodes
+          for (const calledFunc of funcMap[func]) {
+            e.push({'from': nodeIds[func], 'to': nodeIds[calledFunc]})
+          }
+        }
+        var edges = new vis.DataSet(e)
+        
+        // console.log(n, e);
+
+        //  nodes = new vis.DataSet([
+        //     {id: 1, label: 'Node 1'},
+        //     {id: 2, label: 'Node 2'},
+        //     {id: 3, label: 'Node 3'},
+        //     {id: 4, label: 'Node 4'},
+        //     {id: 5, label: 'Node 5'}
+        // ]);
+
+        // // create an array with edges
+        //  edges = new vis.DataSet([
+        //     {from: 1, to: 3},
+        //     {from: 1, to: 2},
+        //     {from: 2, to: 4},
+        //     {from: 2, to: 5}
+        // ]);
+
+        // create a network
+        var container = document.getElementById('mynetwork')
+
+        // provide the data in the vis format
+        var data = {
+          nodes: nodes,
+          edges: edges,
+        }
+        var options = {
+          layout: {improvedLayout: false}
+        }
+
+        // initialize your network!
+        var network = new vis.Network(container, data, options)
+        console.log('Finished')
+        console.log(network);
       }
     </script>
     <style type="text/css">
@@ -47,5 +128,6 @@
   </head>
   <body onload="init()">
     hello
+    <div id="mynetwork"></div>
   </body>
 </html>
