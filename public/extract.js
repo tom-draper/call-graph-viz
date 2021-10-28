@@ -202,22 +202,32 @@ function runFile(path) {
       let line = lines[index]
 
       // Look for class definition
-      currentIndent = lookForDefinition(
-        classNameRegex,
-        line,
-        stack,
-        currentIndent,
-        indentSize,
-      )
+      let found = line.match(classNameRegex)
+      if (found != null) {
+        let indent = lineIndent(line, indentSize)
+    
+        currentIndent = adjustIndentation(indent, currentIndent, stack)
+    
+        stack.push({
+          type: 'class',
+          name: found.groups.name,
+        })
+        continue
+      }
 
       // Look for function definition
-      currentIndent = lookForDefinition(
-        funcNameRegex,
-        line,
-        stack,
-        currentIndent,
-        indentSize,
-      )
+      found = line.match(funcNameRegex)
+      if (found != null) {
+        let indent = lineIndent(line, indentSize)
+    
+        currentIndent = adjustIndentation(indent, currentIndent, stack)
+    
+        stack.push({
+          type: 'func',
+          name: found.groups.name,
+        })
+        continue
+      }
 
       // Look for a called function
       insertCalledFunctions(line, nodes, stack)
@@ -250,3 +260,5 @@ function run() {
 module.exports = {
   run
 }
+
+run()
