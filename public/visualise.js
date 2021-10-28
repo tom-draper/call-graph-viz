@@ -1,5 +1,5 @@
 function isUpperCase(str) {
-  return str === str.toUpperCase();
+  return str === str.toUpperCase()
 }
 
 function getClass(func) {
@@ -15,53 +15,97 @@ function getClass(func) {
 }
 
 function randomColor() {
-  return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
+  return (
+    '#' +
+    Math.floor(Math.random() * 16777215)
+      .toString(16)
+      .padStart(6, '0')
+      .toUpperCase()
+  )
 }
 
 // From https://gist.github.com/bendc/76c48ce53299e6078a76
 
 const randomInt = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
 
 function randomColour() {
-  var h = randomInt(0, 360);
-  var s = randomInt(42, 98);
-  var l = randomInt(40, 90);
-  return `hsl(${h},${s}%,${l}%)`;
+  let h = randomInt(0, 360)
+  let s = randomInt(25, 70)
+  let l = randomInt(10, 85)
+  let colour = `hsl(${h},${s}%,${l}%)`
+  let highlight = `hsl(${h},${s}%,${l * 0.9}%)` // Darker
+  return [colour, highlight]
+}
+
+function newShade(color, amount) {
+  return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+}
+
+function getColour(groups) {
+  let colourStack = [
+    '#ffa609',  // Orange
+    '#6f6cfe',  // Purple
+    '#7ce03b',  // Green
+    '#ED2939',  // Red
+    '#fefd05',  // Yellow
+    '#00468C',  // Blue
+    '#fb7f81',  // Salmon
+    '#800000',  // Maroon
+    '#008080',  // Teal
+    '#008000',  // Dark green
+    '#FFD700',  // Gold
+    '#C71585', 
+    '#FF00FF', 
+    '#00FFFF', 
+  ]
+
+  console.log(groups)
+  console.log(Object.keys(groups).length);
+  if (Object.keys(groups).length > colourStack.length) {
+    return randomColor()
+  }
+  return colourStack[Object.keys(groups).length]
 }
 
 function buildNextNode(id, func, groups, classes, counts) {
-  let nextNode = null;
+  let nextNode = null
 
   let parts = func.split('.')
-  let label = parts[parts.length-1]
+  let label = parts[parts.length - 1]
   let funcClass = getClass(func)
 
   if (funcClass != null) {
-    nextNode = {'id': id, 'label': label, 'group': funcClass, 'value': counts}
+    nextNode = { id: id, label: label, group: funcClass, value: counts }
     if (!(funcClass in groups)) {
-      let colour = randomColour();
+      let colour = getColour(groups)
+      let highlight = newShade(colour, -70);
+      console.log(highlight)
       groups[funcClass] = {
+        useDefaultGroups: true,
         color: {
+          border: highlight,
           background: colour,
+          // highlight: {
+          //   border: highlight,
+          //   background: 'orange'
+          // }
         },
       }
       classes[funcClass] = colour
     }
   } else {
-      nextNode = {'id': id, 'label': label, 'value': counts}
+    nextNode = { id: id, label: label, value: counts }
   }
   return nextNode
 }
 
 function visualise(funcMap) {
-
   // Count number of times each function is mentioned (for vis node size)
   let funcCounts = {}
   for (const func in funcMap) {
     for (const funcCalled of funcMap[func]) {
-      console.log(func, funcCalled)
       if (!(func in funcCounts)) {
         funcCounts[func] = 0
       }
@@ -73,8 +117,6 @@ function visualise(funcMap) {
       funcCounts[funcCalled] += 1
     }
   }
-
-  console.log(funcCounts)
 
   // Create nodes
   let nodeIds = {}
@@ -106,9 +148,7 @@ function visualise(funcMap) {
     }
   }
 
-  console.log(n)
-
-  var nodes = new vis.DataSet(n);
+  var nodes = new vis.DataSet(n)
 
   let e = []
 
@@ -131,7 +171,7 @@ function visualise(funcMap) {
     let to = fromAndTo[1]
     // console.log(from, to);
     let count = callCounts[func]
-    e.push({'from': from, 'to': to, 'value': count})
+    e.push({ from: from, to: to, value: count })
   }
 
   var edges = new vis.DataSet(e)
@@ -145,17 +185,26 @@ function visualise(funcMap) {
     edges: edges,
   }
   var options = {
-    layout: {improvedLayout: false},
-    // groups: groups,
-    edges: {value: 1, color: {opacity: 0.65}, arrows: {to: {enabled: true, scaleFactor: 0.5}}},
-    nodes: {shape: 'dot', value: 0.1, opacity: 0.9}
+    layout: { improvedLayout: false },
+    groups: groups,
+    edges: {
+      value: 1,
+      color: { opacity: 0.65, inherit: 'from' },
+      arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+    },
+    nodes: { shape: 'dot', value: 0.1, opacity: 0.85, borderWidth: 1 },
   }
 
   var network = new vis.Network(container, data, options)
 
   let banner = document.getElementById('banner')
   for (let funcClass in classes) {
-    let htmlString = '<div class="function-class" style="background-color:' + classes[funcClass] + '">' + funcClass + '</div>'
-    banner.innerHTML += htmlString;
+    let htmlString =
+      '<div class="function-class" style="background-color:' +
+      classes[funcClass] +
+      '">' +
+      funcClass +
+      '</div>'
+    banner.innerHTML += htmlString
   }
 }
