@@ -117,13 +117,32 @@
         var nodes = new vis.DataSet(n);
 
         let e = []
+
+        let callCounts = {}
         // Connect nodes
         for (const func in funcMap) {
+          console.log(func)
           // Add any new called functions as nodes
           for (const calledFunc of funcMap[func]) {
-            e.push({'from': nodeIds[func], 'to': nodeIds[calledFunc]})
+            if (!(nodeIds[func] + '->' + nodeIds[calledFunc] in callCounts)) {
+              callCounts[nodeIds[func] + '->' + nodeIds[calledFunc]] = 0
+            }
+            callCounts[nodeIds[func] + '->' + nodeIds[calledFunc]] += 1
+            // e.push({'from': nodeIds[func], 'to': nodeIds[calledFunc]})
           }
         }
+
+        console.log(callCounts)
+
+        for (const func in callCounts) {
+          let fromAndTo = func.split('->')
+          let from = fromAndTo[0]
+          let to = fromAndTo[1]
+          console.log(from, to);
+          let count = callCounts[func]
+          e.push({'from': from, 'to': to, 'value': count})
+        }
+
         var edges = new vis.DataSet(e)
         
         // console.log(n, e);
@@ -153,7 +172,9 @@
           edges: edges,
         }
         var options = {
-          layout: {improvedLayout: false}
+          layout: {improvedLayout: false},
+          value: 1,
+          // scaling: {}
         }
 
         // initialize your network!
