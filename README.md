@@ -2,5 +2,6 @@
 
 A Python function call graph visualiser.
 
-## Usage
-Run node main <filename.py>
+Run the main.js file using node, followed by the Python file to visualise:
+
+    node main [filename].py
