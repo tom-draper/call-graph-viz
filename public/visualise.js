@@ -1,97 +1,133 @@
-function onLoad(nodes) {
+function isUpperCase(str) {
+  return str === str.toUpperCase();
+}
 
-  // var graphGenerator = Viva.Graph.generator()
-  var graph = Viva.Graph.graph()
-  // var graph = graphGenerator.path(10)
-  var container = document.body
+function getClass(func) {
+  let parts = func.split('.')
+  for (let part of parts) {
+    if (part != null && part != '') {
+      if (isUpperCase(part[0])) {
+        return part
+      }
+    }
+  }
+  return null
+}
 
-  
+function randomColour() {
+  return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
+}
+
+function buildNextNode(id, label, func, groups, classes) {
+  let nextNode = null;
+  let funcClass = getClass(func)
+  if (funcClass != null) {
+    nextNode = {'id': id, 'label': label, 'group': funcClass}
+    if (!(funcClass in groups)) {
+      let colour = randomColour();
+      groups[funcClass] = {
+        shape: 'circle',
+        color: {
+          border: 'black',
+          background: colour,
+          highlight: {
+            border: 'yellow',
+            background: 'orange'
+          }
+        },
+        fontSize: 18
+      }
+      classes[funcClass] = colour
+    }
+  } else {
+      nextNode = {'id': id, 'label': label}
+  }
+  return nextNode
+}
+
+function visualise(funcMap) {
   // Create nodes
   let nodeIds = {}
   let id = 0
-  for (const func in nodes) {
+  let groups = {}
+  let classes = {}
+  let n = []
+  for (const func in funcMap) {
     // Add defined function as node
-    console.log(func)
-    graph.addNode(id, {name: func})
+    let parts = func.split('.')
+    let label = parts[parts.length-1]
+
+    let nextNode = buildNextNode(id, label, func, groups, classes)
+
+    n.push(nextNode)
     nodeIds[func] = id
     id += 1
 
     // Add any new called functions as nodes
-    for (const calledFunc of nodes[func]) {
+    for (const calledFunc of funcMap[func]) {
       if (!(calledFunc in nodeIds)) {
-        graph.addNode(id, {name: calledFunc})
+        let parts = calledFunc.split('.')
+        let label = parts[parts.length-1]
+
+        let nextNode = buildNextNode(id, label, calledFunc, groups, classes)
+
+        n.push(nextNode)
         nodeIds[calledFunc] = id
         id += 1
       }
     }
   }
 
-  console.log(nodeIds)
+  console.log(groups)
+  console.log(classes)
 
+  var nodes = new vis.DataSet(n);
+
+  let e = []
+
+  let callCounts = {}
   // Connect nodes
-  for (const func in nodes) {
+  for (const func in funcMap) {
+    console.log(func)
     // Add any new called functions as nodes
-    for (const calledFunc of nodes[func]) {
-      console.log(nodeIds[func], nodeIds[calledFunc])
-      graph.addLink(nodeIds[func], nodeIds[calledFunc])
+    for (const calledFunc of funcMap[func]) {
+      if (!(nodeIds[func] + '->' + nodeIds[calledFunc] in callCounts)) {
+        callCounts[nodeIds[func] + '->' + nodeIds[calledFunc]] = 0
+      }
+      callCounts[nodeIds[func] + '->' + nodeIds[calledFunc]] += 1
     }
   }
 
-  console.log(graph);
+  for (const func in callCounts) {
+    let fromAndTo = func.split('->')
+    let from = fromAndTo[0]
+    let to = fromAndTo[1]
+    // console.log(from, to);
+    let count = callCounts[func]
+    e.push({'from': from, 'to': to, 'value': count})
+  }
 
-  // first we generate DOM label for each graph node. Be cautious
-  // here, since for large graphs with more than 1k nodes, this will
-  // become a bottleneck.
-  var domLabels = generateDOMLabels(graph)
+  var edges = new vis.DataSet(e)
 
-  var layout = Viva.Graph.Layout.forceDirected(graph, {
-    springLength: 100,
-    springCoeff: 0.0008,
-    dragCoeff: 0.02,
-    gravity: -1.2,
-  })
+  // create a network
+  var container = document.getElementById('mynetwork')
 
-  var graphics = Viva.Graph.View.webglGraphics()
-  graphics.placeNode(function (ui, pos) {
-    // This callback is called by the renderer before it updates
-    // node coordinate. We can use it to update corresponding DOM
-    // label position;
+  // provide the data in the vis format
+  var data = {
+    nodes: nodes,
+    edges: edges,
+  }
+  var options = {
+    layout: {improvedLayout: false},
+    value: 1,
+    edges: {arrows: {to: {enabled: true, scaleFactor: 0.5}}}
+  }
 
-    // we create a copy of layout position
-    var domPos = {
-      x: pos.x,
-      y: pos.y,
-    }
-    // And ask graphics to transform it to DOM coordinates:
-    graphics.transformGraphToClientCoordinates(domPos)
+  var network = new vis.Network(container, data, options)
 
-    // then move corresponding dom label to its own position:
-    var nodeId = ui.node.id
-    var labelStyle = domLabels[nodeId].style
-    labelStyle.left = domPos.x + 'px'
-    labelStyle.top = domPos.y + 'px'
-  })
-
-  var renderer = Viva.Graph.View.renderer(graph, {
-    layout: layout,
-    graphics: graphics,
-    container: container,
-  })
-
-  renderer.run()
-
-  function generateDOMLabels(graph) {
-    // this will map node id into DOM element
-    var labels = Object.create(null)
-    graph.forEachNode(function (node) {
-      var label = document.createElement('span')
-      label.classList.add('node-label')
-      label.innerText = node.data.name
-      labels[node.id] = label
-      container.appendChild(label)
-    })
-    // NOTE: If your graph changes over time you will need to
-    // monitor graph changes and update DOM elements accordingly
-    return labels
+  let banner = document.getElementById('banner')
+  for (let funcClass in classes) {
+    let htmlString = '<div class="function-class" style="background-color:' + classes[funcClass] + '">' + funcClass + '</div>'
+    banner.innerHTML += htmlString;
   }
 }

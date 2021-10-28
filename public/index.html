@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Example</title>
+    <style type="text/css">
+      #mynetwork {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+      }
+      #banner {
+        background-color: rgb(234, 234, 234);
+        opacity: 0.8;
+        width: 100%;
+        height: auto;
+        position: absolute;
+        display: grid;
+        grid-auto-flow: column;
+        place-items: center;
+        font-family: sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        align-items: center;
+        z-index: 5;
+      }
+      .function-class {
+        width: max-content;
+        margin: 10px 5px;
+        text-align: center;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+      body {
+        margin: 0;
+      }
+  </style>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="visualise.js"></script>
+    <script>
+      const loadJSON = (callback) => {
+        const xObj = new XMLHttpRequest()
+        xObj.overrideMimeType('application/json')
+        xObj.open('GET', './nodes.json', true)
+        xObj.onreadystatechange = () => {
+          if (xObj.readyState === 4 && xObj.status === 200) {
+            callback(xObj.responseText)
+          }
+        }
+        xObj.send(null)
+      }
+
+      const init = () => {
+        loadJSON((response) => {
+          const json = JSON.parse(response)
+          visualise(json);
+        })
+      }
+    </script>
+    <style type="text/css">
+      body,
+      html,
+      canvas {
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        margin: 0;
+        overflow: hidden;
+      }
+      .node-label {
+        position: absolute;
+        pointer-events: none;
+        color: black;
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body onload="init()">
+    <div id="banner"></div>
+    <div id="mynetwork"></div>
+  </body>
+</html>

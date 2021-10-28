@@ -9,6 +9,7 @@ updater.py
 utilities.py
 visualiser.py
 analysis.py
+nodes.json
 
 # Logs
 logs

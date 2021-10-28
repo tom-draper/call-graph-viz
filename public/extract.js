@@ -250,7 +250,7 @@ function run() {
   let nodes = runFile('./code/data.py')
   
   var saveJson = JSON.stringify(nodes, null, 4)
-  fs.writeFile('nodes.json', saveJson, 'utf8', (err)=>{
+  fs.writeFile('./public/nodes.json', saveJson, 'utf8', (err)=>{
       if(err){
           console.log(err)
       }
