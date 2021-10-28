@@ -14,8 +14,21 @@ function getClass(func) {
   return null
 }
 
-function randomColour() {
+function randomColor() {
   return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
+}
+
+// From https://gist.github.com/bendc/76c48ce53299e6078a76
+
+const randomInt = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+function randomColour() {
+  var h = randomInt(0, 360);
+  var s = randomInt(42, 98);
+  var l = randomInt(40, 90);
+  return `hsl(${h},${s}%,${l}%)`;
 }
 
 function buildNextNode(id, func, groups, classes, counts) {
@@ -30,16 +43,9 @@ function buildNextNode(id, func, groups, classes, counts) {
     if (!(funcClass in groups)) {
       let colour = randomColour();
       groups[funcClass] = {
-        shape: 'circle',
         color: {
-          border: 'black',
           background: colour,
-          highlight: {
-            border: 'yellow',
-            background: 'orange'
-          }
         },
-        fontSize: 18
       }
       classes[funcClass] = colour
     }
@@ -140,7 +146,7 @@ function visualise(funcMap) {
   }
   var options = {
     layout: {improvedLayout: false},
-    // value: 1,
+    // groups: groups,
     edges: {value: 1, color: {opacity: 0.65}, arrows: {to: {enabled: true, scaleFactor: 0.5}}},
     nodes: {shape: 'dot', value: 0.1, opacity: 0.9}
   }
