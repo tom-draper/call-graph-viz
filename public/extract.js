@@ -97,12 +97,28 @@ function lookForDefinition(regex, line, stack, currentIndent, indentSize) {
 }
 
 function getCalledFunctions(line) {
-  const calledFuncRegex = /(?<calledFunction>[A-Za-z0-9_.\'\[\]]*[A-Za-z_]+)\(/
+  const calledFuncRegex = /(?<calledFunction>[A-Za-z0-9_.]*[A-Za-z_]+)\(/
   // const calledFuncRegex = /(?<calledFunction>([a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?))/;
   return [...line.matchAll(calledFuncRegex)]
 }
 
-function insertCalledFunctions(line, nodes, stack, file) {
+function isUpperCase(str) {
+  return str === str.toUpperCase();
+}
+
+function getClass(stack) {
+  let funcsClass = null
+
+  for (let s of stack) {
+    if (isUpperCase(s.name[0])) {
+      funcsClass = s.name
+    }
+  }
+
+  return funcsClass
+}
+
+function insertCalledFunctions(line, nodes, stack) {
   let found = getCalledFunctions(line)
   if (found.length > 0) {
     for (let i = 0; i < found.length; i++) {
@@ -110,11 +126,12 @@ function insertCalledFunctions(line, nodes, stack, file) {
       for (let s of stack) {
         func += '.' + s.name
       }
-      func = file + func
+      func = func.slice(1)  // Remove dot from beginning 
       if (!(func in nodes)) {
         nodes[func] = []
       }
-      nodes[func].push(found[i].groups.calledFunction)
+      let funcsClass = getClass(stack)
+      nodes[func].push(found[i].groups.calledFunction.replace('self', funcsClass))
     }
   }
 }
@@ -159,21 +176,26 @@ function collected(nodes) {
   return count
 }
 
-function runFile(filename) {
-  let file = filename.replace('.py', '')
+function fileText(path) {
+  let s = path.replace('.py', '').split('/')
+  return s[s.length-1]
+}
+
+function runFile(path) {
+  let file = fileText(path)
 
   const classNameRegex = /class (?<name>[A-Za-z_]+)(\(.*\))?:/
   const funcNameRegex = /def (?<name>[A-Za-z_]+)/
 
   let nodes = {}
   try {
-    let data = fs.readFileSync(filename, 'utf8')
+    let data = fs.readFileSync(path, 'utf8')
     let lines = data.toString().split('\r\n')
 
     let fileImports = collectImports(lines)
     console.log(fileImports)
 
-    let stack = [{ type: 'global', name: 'global' }]
+    let stack = [{ type: 'global', name: file }]
     let indentSize = 4 // Spaces
     let currentIndent = 0
     for (let index in lines) {
@@ -198,7 +220,7 @@ function runFile(filename) {
       )
 
       // Look for a called function
-      insertCalledFunctions(line, nodes, stack, file)
+      insertCalledFunctions(line, nodes, stack)
     }
 
     cleanNodes(nodes)
@@ -206,7 +228,7 @@ function runFile(filename) {
     console.log('Functions collected:', collected(nodes))
 
     console.log(nodes)
-    test(nodes)
+    // test(nodes)
   } catch (e) {
     console.log('Error:', e.stack)
   }

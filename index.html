@@ -13,10 +13,7 @@
         margin: 0;
       }
   </style>
-    <script
-      type="text/javascript"
-      src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
-    ></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script>
       const loadJSON = (callback) => {
         const xObj = new XMLHttpRequest()
@@ -37,26 +34,85 @@
         })
       }
 
+      function isUpperCase(str) {
+        return str === str.toUpperCase();
+      }
+
+      function getClass(func) {
+        let parts = func.split('.')
+        for (let part of parts) {
+          if (part != null && part != '') {
+            if (isUpperCase(part[0])) {
+              return part
+            }
+          }
+        }
+        return null
+      }
+
+      function randomColour() {
+        return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
+      }
+
+      function buildNextNode(id, label, func, groups) {
+        let nextNode = null;
+        let group = getClass(func)
+        if (group != null) {
+          nextNode = {'id': id, 'label': label, 'group': group}
+          if (!(group in groups)) {
+            groups[group] = {
+              shape: 'circle',
+              color: {
+                border: 'black',
+                background: randomColour(),
+                highlight: {
+                  border: 'yellow',
+                  background: 'orange'
+                }
+              },
+              fontColor: 'red',
+              fontSize: 18
+            }
+          }
+        } else {
+            nextNode = {'id': id, 'label': label}
+        }
+        return nextNode
+      }
+
       function onLoad(funcMap) {
         // Create nodes
         let nodeIds = {}
         let id = 0
+        let groups = {}
         let n = []
         for (const func in funcMap) {
           // Add defined function as node
-          n.push({'id': id, 'label': func})
+          let parts = func.split('.')
+          let label = parts[parts.length-1]
+
+          let nextNode = buildNextNode(id, label, func, groups)
+
+          n.push({'id': id, 'label': label})
           nodeIds[func] = id
           id += 1
 
           // Add any new called functions as nodes
           for (const calledFunc of funcMap[func]) {
             if (!(calledFunc in nodeIds)) {
-              n.push({'id': id, 'label': calledFunc})
+              let parts = calledFunc.split('.')
+              let label = parts[parts.length-1]
+
+              let nextNode = buildNextNode(id, label, calledFunc, groups)
+
+              n.push(nextNode)
               nodeIds[calledFunc] = id
               id += 1
             }
           }
         }
+
+        console.log(groups)
 
         var nodes = new vis.DataSet(n);
 
