@@ -234,10 +234,10 @@ function runFile(path) {
     }
 
     cleanNodes(nodes)
-
+    
+    console.log(nodes)
     console.log('Functions collected:', collected(nodes))
 
-    console.log(nodes)
     // test(nodes)
   } catch (e) {
     console.log('Error:', e.stack)

@@ -18,11 +18,15 @@ function randomColour() {
   return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
 }
 
-function buildNextNode(id, label, func, groups, classes) {
+function buildNextNode(id, func, groups, classes, counts) {
   let nextNode = null;
+
+  let parts = func.split('.')
+  let label = parts[parts.length-1]
   let funcClass = getClass(func)
+
   if (funcClass != null) {
-    nextNode = {'id': id, 'label': label, 'group': funcClass}
+    nextNode = {'id': id, 'label': label, 'group': funcClass, 'value': counts}
     if (!(funcClass in groups)) {
       let colour = randomColour();
       groups[funcClass] = {
@@ -40,12 +44,32 @@ function buildNextNode(id, label, func, groups, classes) {
       classes[funcClass] = colour
     }
   } else {
-      nextNode = {'id': id, 'label': label}
+      nextNode = {'id': id, 'label': label, 'value': counts}
   }
   return nextNode
 }
 
 function visualise(funcMap) {
+
+  // Count number of times each function is mentioned (for vis node size)
+  let funcCounts = {}
+  for (const func in funcMap) {
+    for (const funcCalled of funcMap[func]) {
+      console.log(func, funcCalled)
+      if (!(func in funcCounts)) {
+        funcCounts[func] = 0
+      }
+      if (!(funcCalled in funcCounts)) {
+        funcCounts[funcCalled] = 0
+      }
+
+      funcCounts[func] += 1
+      funcCounts[funcCalled] += 1
+    }
+  }
+
+  console.log(funcCounts)
+
   // Create nodes
   let nodeIds = {}
   let id = 0
@@ -54,10 +78,9 @@ function visualise(funcMap) {
   let n = []
   for (const func in funcMap) {
     // Add defined function as node
-    let parts = func.split('.')
-    let label = parts[parts.length-1]
+    let count = funcCounts[func]
 
-    let nextNode = buildNextNode(id, label, func, groups, classes)
+    let nextNode = buildNextNode(id, func, groups, classes, count)
 
     n.push(nextNode)
     nodeIds[func] = id
@@ -66,10 +89,9 @@ function visualise(funcMap) {
     // Add any new called functions as nodes
     for (const calledFunc of funcMap[func]) {
       if (!(calledFunc in nodeIds)) {
-        let parts = calledFunc.split('.')
-        let label = parts[parts.length-1]
+        let count = funcCounts[calledFunc]
 
-        let nextNode = buildNextNode(id, label, calledFunc, groups, classes)
+        let nextNode = buildNextNode(id, calledFunc, groups, classes, count)
 
         n.push(nextNode)
         nodeIds[calledFunc] = id
@@ -78,15 +100,14 @@ function visualise(funcMap) {
     }
   }
 
-  console.log(groups)
-  console.log(classes)
+  console.log(n)
 
   var nodes = new vis.DataSet(n);
 
   let e = []
 
+  // Count number of times each function is called (for vis edge thickness)
   let callCounts = {}
-  // Connect nodes
   for (const func in funcMap) {
     console.log(func)
     // Add any new called functions as nodes
@@ -119,8 +140,9 @@ function visualise(funcMap) {
   }
   var options = {
     layout: {improvedLayout: false},
-    value: 1,
-    edges: {arrows: {to: {enabled: true, scaleFactor: 0.5}}}
+    // value: 1,
+    edges: {value: 1, color: {opacity: 0.65}, arrows: {to: {enabled: true, scaleFactor: 0.5}}},
+    nodes: {shape: 'dot', value: 0.1, opacity: 0.9}
   }
 
   var network = new vis.Network(container, data, options)

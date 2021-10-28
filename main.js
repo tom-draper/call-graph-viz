@@ -8,9 +8,8 @@ extract.run();
 const app = express()
 const port = process.env.PORT || 8080;
 
-app.use(express.static(__dirname + '/public')); //__dir and not _dir
+app.use(express.static(__dirname + '/public'));
 
-// sendFile will go here
 app.get('/', function(req, res) {
   res.render('index.html');
 });
