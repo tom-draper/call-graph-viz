@@ -128,7 +128,6 @@
               callCounts[nodeIds[func] + '->' + nodeIds[calledFunc]] = 0
             }
             callCounts[nodeIds[func] + '->' + nodeIds[calledFunc]] += 1
-            // e.push({'from': nodeIds[func], 'to': nodeIds[calledFunc]})
           }
         }
 
@@ -138,30 +137,12 @@
           let fromAndTo = func.split('->')
           let from = fromAndTo[0]
           let to = fromAndTo[1]
-          console.log(from, to);
+          // console.log(from, to);
           let count = callCounts[func]
           e.push({'from': from, 'to': to, 'value': count})
         }
 
         var edges = new vis.DataSet(e)
-        
-        // console.log(n, e);
-
-        //  nodes = new vis.DataSet([
-        //     {id: 1, label: 'Node 1'},
-        //     {id: 2, label: 'Node 2'},
-        //     {id: 3, label: 'Node 3'},
-        //     {id: 4, label: 'Node 4'},
-        //     {id: 5, label: 'Node 5'}
-        // ]);
-
-        // // create an array with edges
-        //  edges = new vis.DataSet([
-        //     {from: 1, to: 3},
-        //     {from: 1, to: 2},
-        //     {from: 2, to: 4},
-        //     {from: 2, to: 5}
-        // ]);
 
         // create a network
         var container = document.getElementById('mynetwork')
@@ -174,6 +155,7 @@
         var options = {
           layout: {improvedLayout: false},
           value: 1,
+          edges: {arrows: {to: {enabled: true}}}
           // scaling: {}
         }
 
