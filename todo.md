@@ -1,7 +1,7 @@
 
 TODO:
 
-- [] Consider if __name__ == '__main__:
+- [X] Consider if __name__ == '__main__':
 - [] Include support for imported libraries e.g. numpy
 - [] Include option to include all personal libraries imported
 - [] Include option for Python standard library to be excluded

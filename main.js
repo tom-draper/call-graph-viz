@@ -1,18 +1,16 @@
-const extract = require('./public/extract.js');
-const express = require('express');
+const extract = require("./public/extract.js");
+const express = require("express");
 
+extract.run("./code/updater.py");
 
-extract.run('./code/updater.py');
-
-
-const app = express()
+const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + "/public"));
 
-app.get('/', function(req, res) {
-  res.render('index.html');
+app.get("/", function (req, res) {
+  res.render("index.html");
 });
 
 app.listen(port);
-console.log('Server started at: http://localhost:' + port);
+console.log("Server started at: http://localhost:" + port);

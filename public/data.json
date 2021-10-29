@@ -1,9 +1,11 @@
 {
     "funcCalls": {
         "updater": [
-            "Utilities"
+            "Utilities",
+            "Updater",
+            "updater.update_all"
         ],
-        "updater.Updater.__init__": [
+        "Updater.__init__": [
             "Data",
             "Visualiser",
             "join",
@@ -12,7 +14,7 @@
             "os.getenv",
             "os.getenv"
         ],
-        "updater.Updater.fixtures_data": [
+        "Updater.fixtures_data": [
             "requests.get",
             "print",
             "ValueError",
@@ -21,7 +23,7 @@
             "open",
             "json.load"
         ],
-        "updater.Updater.standings_data": [
+        "Updater.standings_data": [
             "requests.get",
             "print",
             "ValueError",
@@ -30,28 +32,28 @@
             "open",
             "json.load"
         ],
-        "updater.Updater.fetch_current_season": [
+        "Updater.fetch_current_season": [
             "Updater.fixtures_data",
             "Updater.standings_data"
         ],
-        "updater.Updater.load_previous_fixtures": [
+        "Updater.load_previous_fixtures": [
             "range",
             "Updater.fixtures_data",
             "Updater.standings_data"
         ],
-        "updater.Updater.fetch_json_data": [
+        "Updater.fetch_json_data": [
             "Updater.fetch_current_season",
             "Updater.load_previous_fixtures",
             "datetime.now"
         ],
-        "updater.Updater.save_data": [
+        "Updater.save_data": [
             "open",
             "json.dump"
         ],
-        "updater.Updater.get_logo_urls": [
+        "Updater.get_logo_urls": [
             ".replace"
         ],
-        "updater.Updater.update_dataframes": [
+        "Updater.update_dataframes": [
             "Updater.data.standings.update",
             "Updater.data.fixtures.update",
             "Updater.data.team_ratings.update",
@@ -61,7 +63,7 @@
             "Updater.data.upcoming.update",
             "Updater.data.season_stats.update"
         ],
-        "updater.Updater.save_tables": [
+        "Updater.save_tables": [
             "Updater.data.standings.save_to_html",
             "Updater.data.fixtures.save_to_html",
             "Updater.data.team_ratings.save_to_html",
@@ -71,12 +73,12 @@
             "Updater.data.upcoming.save_to_html",
             "Updater.data.season_stats.save_to_html"
         ],
-        "updater.Updater.update_data": [
+        "Updater.update_data": [
             "Updater.get_logo_urls",
             "dict.keys",
             "Updater.update_dataframes"
         ],
-        "updater.Updater.update_all": [
+        "Updater.update_all": [
             "Updater.fetch_json_data",
             "print",
             "print",
@@ -86,42 +88,38 @@
             "Updater.save_data",
             "print",
             "Updater.save_tables",
-            "Updater.visualiser.update",
-            "Updater",
-            "updater.update_all"
+            "Updater.visualiser.update"
         ]
     },
     "funcCounts": {
-        "updater": 1,
+        "updater": 3,
         "Utilities": 1,
-        "updater.Updater.__init__": 7,
+        "Updater": 1,
+        "updater.update_all": 1,
+        "Updater.__init__": 7,
         "Data": 1,
         "Visualiser": 1,
         "join": 1,
         "load_dotenv": 1,
         "os.getenv": 3,
-        "updater.Updater.fixtures_data": 7,
+        "Updater.fixtures_data": 9,
         "requests.get": 2,
         "print": 8,
         "ValueError": 2,
         "response.json": 2,
         "open": 3,
         "json.load": 2,
-        "updater.Updater.standings_data": 7,
-        "updater.Updater.fetch_current_season": 2,
-        "Updater.fixtures_data": 2,
-        "Updater.standings_data": 2,
-        "updater.Updater.load_previous_fixtures": 3,
+        "Updater.standings_data": 9,
+        "Updater.fetch_current_season": 3,
+        "Updater.load_previous_fixtures": 4,
         "range": 1,
-        "updater.Updater.fetch_json_data": 3,
-        "Updater.fetch_current_season": 1,
-        "Updater.load_previous_fixtures": 1,
+        "Updater.fetch_json_data": 5,
         "datetime.now": 1,
-        "updater.Updater.save_data": 2,
+        "Updater.save_data": 3,
         "json.dump": 1,
-        "updater.Updater.get_logo_urls": 1,
+        "Updater.get_logo_urls": 2,
         ".replace": 1,
-        "updater.Updater.update_dataframes": 8,
+        "Updater.update_dataframes": 9,
         "Updater.data.standings.update": 1,
         "Updater.data.fixtures.update": 1,
         "Updater.data.team_ratings.update": 1,
@@ -130,7 +128,7 @@
         "Updater.data.position_over_time.update": 1,
         "Updater.data.upcoming.update": 1,
         "Updater.data.season_stats.update": 1,
-        "updater.Updater.save_tables": 8,
+        "Updater.save_tables": 9,
         "Updater.data.standings.save_to_html": 1,
         "Updater.data.fixtures.save_to_html": 1,
         "Updater.data.team_ratings.save_to_html": 1,
@@ -139,75 +137,67 @@
         "Updater.data.position_over_time.save_to_html": 1,
         "Updater.data.upcoming.save_to_html": 1,
         "Updater.data.season_stats.save_to_html": 1,
-        "updater.Updater.update_data": 3,
-        "Updater.get_logo_urls": 1,
+        "Updater.update_data": 4,
         "dict.keys": 1,
-        "Updater.update_dataframes": 1,
-        "updater.Updater.update_all": 12,
-        "Updater.fetch_json_data": 2,
-        "Updater.update_data": 1,
-        "Updater.save_data": 1,
-        "Updater.save_tables": 1,
-        "Updater.visualiser.update": 1,
-        "Updater": 1,
-        "updater.update_all": 1
+        "Updater.update_all": 10,
+        "Updater.visualiser.update": 1
     },
     "callCounts": {
         "updater->Utilities": 1,
-        "updater.Updater.__init__->Data": 1,
-        "updater.Updater.__init__->Visualiser": 1,
-        "updater.Updater.__init__->join": 1,
-        "updater.Updater.__init__->load_dotenv": 1,
-        "updater.Updater.__init__->os.getenv": 3,
-        "updater.Updater.fixtures_data->requests.get": 1,
-        "updater.Updater.fixtures_data->print": 2,
-        "updater.Updater.fixtures_data->ValueError": 1,
-        "updater.Updater.fixtures_data->response.json": 1,
-        "updater.Updater.fixtures_data->open": 1,
-        "updater.Updater.fixtures_data->json.load": 1,
-        "updater.Updater.standings_data->requests.get": 1,
-        "updater.Updater.standings_data->print": 2,
-        "updater.Updater.standings_data->ValueError": 1,
-        "updater.Updater.standings_data->response.json": 1,
-        "updater.Updater.standings_data->open": 1,
-        "updater.Updater.standings_data->json.load": 1,
-        "updater.Updater.fetch_current_season->Updater.fixtures_data": 1,
-        "updater.Updater.fetch_current_season->Updater.standings_data": 1,
-        "updater.Updater.load_previous_fixtures->range": 1,
-        "updater.Updater.load_previous_fixtures->Updater.fixtures_data": 1,
-        "updater.Updater.load_previous_fixtures->Updater.standings_data": 1,
-        "updater.Updater.fetch_json_data->Updater.fetch_current_season": 1,
-        "updater.Updater.fetch_json_data->Updater.load_previous_fixtures": 1,
-        "updater.Updater.fetch_json_data->datetime.now": 1,
-        "updater.Updater.save_data->open": 1,
-        "updater.Updater.save_data->json.dump": 1,
-        "updater.Updater.get_logo_urls->.replace": 1,
-        "updater.Updater.update_dataframes->Updater.data.standings.update": 1,
-        "updater.Updater.update_dataframes->Updater.data.fixtures.update": 1,
-        "updater.Updater.update_dataframes->Updater.data.team_ratings.update": 1,
-        "updater.Updater.update_dataframes->Updater.data.home_advantages.update": 1,
-        "updater.Updater.update_dataframes->Updater.data.form.update": 1,
-        "updater.Updater.update_dataframes->Updater.data.position_over_time.update": 1,
-        "updater.Updater.update_dataframes->Updater.data.upcoming.update": 1,
-        "updater.Updater.update_dataframes->Updater.data.season_stats.update": 1,
-        "updater.Updater.save_tables->Updater.data.standings.save_to_html": 1,
-        "updater.Updater.save_tables->Updater.data.fixtures.save_to_html": 1,
-        "updater.Updater.save_tables->Updater.data.team_ratings.save_to_html": 1,
-        "updater.Updater.save_tables->Updater.data.home_advantages.save_to_html": 1,
-        "updater.Updater.save_tables->Updater.data.form.save_to_html": 1,
-        "updater.Updater.save_tables->Updater.data.position_over_time.save_to_html": 1,
-        "updater.Updater.save_tables->Updater.data.upcoming.save_to_html": 1,
-        "updater.Updater.save_tables->Updater.data.season_stats.save_to_html": 1,
-        "updater.Updater.update_data->Updater.get_logo_urls": 1,
-        "updater.Updater.update_data->dict.keys": 1,
-        "updater.Updater.update_data->Updater.update_dataframes": 1,
-        "updater.Updater.update_all->Updater.fetch_json_data": 2,
-        "updater.Updater.update_all->print": 4,
-        "updater.Updater.update_all->Updater.update_data": 1,
-        "updater.Updater.update_all->Updater.save_data": 1,
-        "updater.Updater.update_all->Updater.save_tables": 1,
-        "updater.Updater.update_all->Updater.visualiser.update": 1,
-        "updater.Updater.update_all->Updater": 1,
-        "updater.Updater.update_all->updater.update_all": 1
+        "updater->Updater": 1,
+        "updater->updater.update_all": 1,
+        "Updater.__init__->Data": 1,
+        "Updater.__init__->Visualiser": 1,
+        "Updater.__init__->join": 1,
+        "Updater.__init__->load_dotenv": 1,
+        "Updater.__init__->os.getenv": 3,
+        "Updater.fixtures_data->requests.get": 1,
+        "Updater.fixtures_data->print": 2,
+        "Updater.fixtures_data->ValueError": 1,
+        "Updater.fixtures_data->response.json": 1,
+        "Updater.fixtures_data->open": 1,
+        "Updater.fixtures_data->json.load": 1,
+        "Updater.standings_data->requests.get": 1,
+        "Updater.standings_data->print": 2,
+        "Updater.standings_data->ValueError": 1,
+        "Updater.standings_data->response.json": 1,
+        "Updater.standings_data->open": 1,
+        "Updater.standings_data->json.load": 1,
+        "Updater.fetch_current_season->Updater.fixtures_data": 1,
+        "Updater.fetch_current_season->Updater.standings_data": 1,
+        "Updater.load_previous_fixtures->range": 1,
+        "Updater.load_previous_fixtures->Updater.fixtures_data": 1,
+        "Updater.load_previous_fixtures->Updater.standings_data": 1,
+        "Updater.fetch_json_data->Updater.fetch_current_season": 1,
+        "Updater.fetch_json_data->Updater.load_previous_fixtures": 1,
+        "Updater.fetch_json_data->datetime.now": 1,
+        "Updater.save_data->open": 1,
+        "Updater.save_data->json.dump": 1,
+        "Updater.get_logo_urls->.replace": 1,
+        "Updater.update_dataframes->Updater.data.standings.update": 1,
+        "Updater.update_dataframes->Updater.data.fixtures.update": 1,
+        "Updater.update_dataframes->Updater.data.team_ratings.update": 1,
+        "Updater.update_dataframes->Updater.data.home_advantages.update": 1,
+        "Updater.update_dataframes->Updater.data.form.update": 1,
+        "Updater.update_dataframes->Updater.data.position_over_time.update": 1,
+        "Updater.update_dataframes->Updater.data.upcoming.update": 1,
+        "Updater.update_dataframes->Updater.data.season_stats.update": 1,
+        "Updater.save_tables->Updater.data.standings.save_to_html": 1,
+        "Updater.save_tables->Updater.data.fixtures.save_to_html": 1,
+        "Updater.save_tables->Updater.data.team_ratings.save_to_html": 1,
+        "Updater.save_tables->Updater.data.home_advantages.save_to_html": 1,
+        "Updater.save_tables->Updater.data.form.save_to_html": 1,
+        "Updater.save_tables->Updater.data.position_over_time.save_to_html": 1,
+        "Updater.save_tables->Updater.data.upcoming.save_to_html": 1,
+        "Updater.save_tables->Updater.data.season_stats.save_to_html": 1,
+        "Updater.update_data->Updater.get_logo_urls": 1,
+        "Updater.update_data->dict.keys": 1,
+        "Updater.update_data->Updater.update_dataframes": 1,
+        "Updater.update_all->Updater.fetch_json_data": 2,
+        "Updater.update_all->print": 4,
+        "Updater.update_all->Updater.update_data": 1,
+        "Updater.update_all->Updater.save_data": 1,
+        "Updater.update_all->Updater.save_tables": 1,
+        "Updater.update_all->Updater.visualiser.update": 1
     }
 }
