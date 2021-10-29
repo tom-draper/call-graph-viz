@@ -267,16 +267,17 @@ function getFuncCalls(lines, path, includeStdLib) {
   const classNameRegex = /class (?<name>[A-Za-z_]+)(\(.*\))?:/;
   const funcNameRegex = /def (?<name>[A-Za-z_]+)/;
 
+  let line = null;
   let found = null;
   let funcCalls = {};
   let stack = [{ type: "global", name: file }];
   let indentSize = 4; // Spaces
   let currentIndent = 0;
   for (let index in lines) {
-    let line = lines[index];
+    line = lines[index];
 
     // Look for if __name__ == '__main__':
-    [currentIndent, found] = lookForIfNameEqualsMain(ifNameEqualsMainRegex, line, stack, currentIndent, indentSize);
+    [currentIndent, found] = lookForIfNameEqualsMain(line, stack, currentIndent, indentSize);
     if (found) {
       continue;
     }
