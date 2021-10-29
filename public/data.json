@@ -6,6 +6,7 @@
             "o.brute_force"
         ],
         "optimise.OptimisePredictions.get_prev_matches": [
+            "range",
             ".replace",
             ".replace",
             "OptimisePredictions.game_result_tuple",
@@ -20,6 +21,7 @@
             "OptimisePredictions.correct_result"
         ],
         "optimise.OptimisePredictions.get_actual_scores": [
+            "open",
             "json.load",
             "dict.values",
             "util.convert_team_name_or_initials",
@@ -33,7 +35,13 @@
             "np.linspace",
             "np.linspace",
             "Predictor",
-            "OptimisePredictions.score_predictions"
+            "OptimisePredictions.score_predictions",
+            "print",
+            "print",
+            "print",
+            "print",
+            "print",
+            "print"
         ]
     },
     "funcCounts": {
@@ -41,7 +49,8 @@
         "Utilities": 1,
         "OptimisePredictions": 1,
         "o.brute_force": 1,
-        "optimise.OptimisePredictions.get_prev_matches": 4,
+        "optimise.OptimisePredictions.get_prev_matches": 5,
+        "range": 1,
         ".replace": 2,
         "OptimisePredictions.game_result_tuple": 1,
         "list.append": 2,
@@ -51,22 +60,25 @@
         "predictor.calc_score_prediction": 1,
         "predictor.prediction_details": 1,
         "OptimisePredictions.correct_result": 1,
-        "optimise.OptimisePredictions.get_actual_scores": 5,
+        "optimise.OptimisePredictions.get_actual_scores": 6,
+        "open": 1,
         "json.load": 1,
         "dict.values": 1,
         "util.convert_team_name_or_initials": 2,
-        "optimise.OptimisePredictions.brute_force": 7,
+        "optimise.OptimisePredictions.brute_force": 13,
         "OptimisePredictions.get_actual_scores": 1,
         "Updater": 1,
         "updater.update_all": 1,
         "np.linspace": 2,
         "Predictor": 1,
-        "OptimisePredictions.score_predictions": 1
+        "OptimisePredictions.score_predictions": 1,
+        "print": 6
     },
     "callCounts": {
         "optimise->Utilities": 1,
         "optimise->OptimisePredictions": 1,
         "optimise->o.brute_force": 1,
+        "optimise.OptimisePredictions.get_prev_matches->range": 1,
         "optimise.OptimisePredictions.get_prev_matches->.replace": 2,
         "optimise.OptimisePredictions.get_prev_matches->OptimisePredictions.game_result_tuple": 1,
         "optimise.OptimisePredictions.get_prev_matches->list.append": 1,
@@ -75,6 +87,7 @@
         "optimise.OptimisePredictions.score_predictions->predictor.calc_score_prediction": 1,
         "optimise.OptimisePredictions.score_predictions->predictor.prediction_details": 1,
         "optimise.OptimisePredictions.score_predictions->OptimisePredictions.correct_result": 1,
+        "optimise.OptimisePredictions.get_actual_scores->open": 1,
         "optimise.OptimisePredictions.get_actual_scores->json.load": 1,
         "optimise.OptimisePredictions.get_actual_scores->dict.values": 1,
         "optimise.OptimisePredictions.get_actual_scores->util.convert_team_name_or_initials": 2,
@@ -84,6 +97,7 @@
         "optimise.OptimisePredictions.brute_force->updater.update_all": 1,
         "optimise.OptimisePredictions.brute_force->np.linspace": 2,
         "optimise.OptimisePredictions.brute_force->Predictor": 1,
-        "optimise.OptimisePredictions.brute_force->OptimisePredictions.score_predictions": 1
+        "optimise.OptimisePredictions.brute_force->OptimisePredictions.score_predictions": 1,
+        "optimise.OptimisePredictions.brute_force->print": 6
     }
 }

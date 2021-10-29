@@ -53,28 +53,16 @@ function newShade(color, amount) {
   );
 }
 
-function getColour(groups) {
-  let colourStack = [
-    "#ffa609", // Orange
-    "#6f6cfe", // Purple
-    "#7ce03b", // Green
-    "#ED2939", // Red
-    "#fefd05", // Yellow
-    "#00468C", // Blue
-    "#fb7f81", // Salmon
-    "#800000", // Maroon
-    "#008080", // Teal
-    "#008000", // Dark green
-    "#FFD700", // Gold
-    "#C71585",
-    "#FF00FF",
-    "#00FFFF",
-  ];
-
-  if (Object.keys(groups).length >= colourStack.length) {
-    return randomColor();
+function selectColour(colours, groups) {
+  let colour = null;
+  if (colours.length > 0) {
+    colour = randomColor();
+  } else {
+    let i = random.nextInt(colours.length);
+    colour = colours[i]
+    delete colours[i]
   }
-  return colourStack[Object.keys(groups).length];
+  return colour
 }
 
 function addBanner(classes) {
@@ -91,7 +79,7 @@ function addBanner(classes) {
   }
 }
 
-function buildNextNode(id, func, groups, classes, counts) {
+function buildNextNode(id, func, groups, classes, counts, colours) {
   let nextNode = null;
 
   let parts = func.split(".");
@@ -101,7 +89,7 @@ function buildNextNode(id, func, groups, classes, counts) {
   if (funcClass != null) {
     nextNode = { id: id, label: label, group: funcClass, value: counts };
     if (!(funcClass in groups)) {
-      let colour = getColour(groups);
+      let colour = selectColour(colours, groups);
       let highlight = newShade(colour, -70);
       groups[funcClass] = {
         useDefaultGroups: true,
@@ -143,6 +131,23 @@ function createEdges(callCounts, nodeIds) {
 }
 
 function createNodes(funcCalls, funcCounts) {
+  let colours = [
+    "#ffa609", // Orange
+    "#6f6cfe", // Purple
+    "#7ce03b", // Green
+    "#ED2939", // Red
+    "#fefd05", // Yellow
+    "#00468C", // Blue
+    "#fb7f81", // Salmon
+    "#800000", // Maroon
+    "#008080", // Teal
+    "#008000", // Dark green
+    "#FFD700", // Gold
+    "#C71585",
+    "#FF00FF",
+    "#00FFFF",
+  ];
+
   let nodeIds = {};
   let id = 0;
   let groups = {};
@@ -154,7 +159,7 @@ function createNodes(funcCalls, funcCounts) {
       // Add defined function as node
       let count = funcCounts[callingFunc];
 
-      let nextNode = buildNextNode(id, callingFunc, groups, classes, count);
+      let nextNode = buildNextNode(id, callingFunc, groups, classes, count, colours);
 
       n.push(nextNode);
       nodeIds[callingFunc] = id;
@@ -166,7 +171,7 @@ function createNodes(funcCalls, funcCounts) {
       if (!(calledFunc in nodeIds)) {
         let count = funcCounts[calledFunc];
 
-        let nextNode = buildNextNode(id, calledFunc, groups, classes, count);
+        let nextNode = buildNextNode(id, calledFunc, groups, classes, count, colours);
 
         n.push(nextNode);
         nodeIds[calledFunc] = id;

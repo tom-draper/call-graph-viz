@@ -27,7 +27,7 @@ function handleArgs () {
 
 let path = handleArgs()
 let includeImports = false;
-let includeStdLib = true;
+let includeStdLib = false;
 
 extract.run(path, includeImports, includeStdLib); 
 

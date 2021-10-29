@@ -340,10 +340,20 @@ function getCallCounts(funcCalls) {
   return callCounts;
 }
 
+function removeComments(code) {
+  // Remove multiline comments
+  code = code.replace(/(['"])\1\1[\d\D]*?\1{3}/g, '');
+  // Remove inline comments
+  code = code.replace(/#.*/g, '')
+  return code;
+}
+
 function runFile(path, includeStdLib) {
   let data = {};
   try {
-    let lines = fs.readFileSync(path, "utf8").toString().split("\r\n");
+    let codeFile = fs.readFileSync(path, "utf8").toString()
+    codeFile = removeComments(codeFile)
+    let lines = codeFile.split("\r\n");
 
     let fileImports = collectImports(lines);
 
@@ -390,4 +400,4 @@ module.exports = {
   run,
 };
 
-// run('./code/updater.py');
+run('./code/main.py');
