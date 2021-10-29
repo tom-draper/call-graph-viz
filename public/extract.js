@@ -135,7 +135,8 @@ function replaceAliases(calledFunc, stack) {
   for (let i = stack.length-1; i>=0; i--) {
     for (let original in stack[i].aliases) {
       let alias = stack[i].aliases[original]
-      calledFunc = calledFunc.replace(alias, original);
+      let regex = new RegExp(`\\b${alias}\\b`, 'g')
+      calledFunc = calledFunc.replace(regex, original);
     }
   }
   return calledFunc;
@@ -283,7 +284,8 @@ function removeStdLibFuncs(funcCalls) {
 function addAlisesToStack(line, stack) {
   let match = line.match(/(?<alias>[^\s]*) = (?<original>[A-Z][^\s]*)\(/);
   if (match != null) {
-    stack[stack.length-1].aliases[match.groups.original] = match.groups.alias;
+    // stack[stack.length-1].aliases[match.groups.original] = match.groups.alias;
+    stack[0].aliases[match.groups.original] = match.groups.alias;
   }
 }
 
