@@ -80,19 +80,32 @@ function test(nodes) {
   console.log("Accuracy:", accuracy * 100, "%");
 }
 
-function lookForDefinition(regex, line, stack, currentIndent, indentSize) {
-  let found = line.match(regex);
-  if (found != null) {
+function lookForDefinition(regex, type, line, stack, currentIndent, indentSize) {
+  let found = false;
+  let match = line.match(regex);
+  if (match != null) {
     let indent = lineIndent(line, indentSize);
-
     currentIndent = adjustIndentation(indent, currentIndent, stack);
 
     stack.push({
-      type: "class",
-      name: found.groups.name,
+      type: type,
+      name: match.groups.name,
     });
+    found = true;
   }
-  return currentIndent;
+  return [currentIndent, found];
+}
+
+function lookForIfNameEqualsMain(line, stack, currentIndent, indentSize) {
+  const ifNameEqualsMainRegex = /if __name__ == ['"]__main__['"]:/;
+  let found = false;
+  let match = line.match(ifNameEqualsMainRegex);
+  if (match != null) {
+    let indent = lineIndent(line, indentSize);
+    currentIndent = adjustIndentation(indent, currentIndent, stack);
+    found = true;
+  }
+  return [currentIndent, found]
 }
 
 function getCalledFunctions(line) {
@@ -215,12 +228,46 @@ function fileText(path) {
   return s[s.length - 1];
 }
 
-function getFuncCalls(lines, path) {
+function removeItemAll(arr, value) {
+  var i = 0;
+  while (i < arr.length) {
+    if (arr[i] === value) {
+      arr.splice(i, 1);
+    } else {
+      ++i;
+    }
+  }
+  return arr;
+}
+
+function removeStdLibFuncs(funcCalls) {
+  let stdLibFuncs = ['abs', 'aiter', 'all', 'any', 'anext', 'ascii', 'bin', 'bool',
+                     'breakpoint', 'bytearray', 'bytes', 'callable', 'chr', 'char', 
+                     'classmethod', 'compile', 'complex', 'delattr', 'dict', 'dir',
+                     'divmod', 'enumerate', 'eval', 'exec', 'filter', 'float', 'format',
+                     'frozenset', 'getattr', 'globals', 'hasattr', 'hash', 'help',
+                     'hex', 'id', 'input', 'int', 'isinstance', 'issubclass', 'iter',
+                     'len', 'list', 'locals', 'map', 'max', 'memoryview', 'min', 
+                     'next', 'object', 'oct', 'open', 'ord', 'pow', 'print', 'property',
+                     'range', 'repr', 'reversed', 'round', 'set', 'setattr', 'slice',
+                     'sorted', 'staticmethod', 'str', 'sum', 'super', 'tuple', 'type',
+                     'vars', 'zip', '__import__']
+  for (let callingFunc in funcCalls) {
+    for (let i in funcCalls[callingFunc]) {
+      let calledFunc = funcCalls[callingFunc][i]
+      if (stdLibFuncs.includes(calledFunc)) {
+        funcCalls[callingFunc] = removeItemAll(funcCalls[callingFunc], calledFunc)
+      }
+    }
+  }
+}
+
+function getFuncCalls(lines, path, includeStdLib) {
   let file = fileText(path);
   const classNameRegex = /class (?<name>[A-Za-z_]+)(\(.*\))?:/;
   const funcNameRegex = /def (?<name>[A-Za-z_]+)/;
-  const ifNameEqualsMainRegex = /if __name__ == ['"]__main__['"]:/;
 
+  let found = null;
   let funcCalls = {};
   let stack = [{ type: "global", name: file }];
   let indentSize = 4; // Spaces
@@ -229,38 +276,20 @@ function getFuncCalls(lines, path) {
     let line = lines[index];
 
     // Look for if __name__ == '__main__':
-    let found = line.match(ifNameEqualsMainRegex);
-    if (found != null) {
-      let indent = lineIndent(line, indentSize);
-      currentIndent = adjustIndentation(indent, currentIndent, stack);
+    [currentIndent, found] = lookForIfNameEqualsMain(ifNameEqualsMainRegex, line, stack, currentIndent, indentSize);
+    if (found) {
       continue;
     }
 
     // Look for class definition
-    found = line.match(classNameRegex);
-    if (found != null) {
-      let indent = lineIndent(line, indentSize);
-
-      currentIndent = adjustIndentation(indent, currentIndent, stack);
-
-      stack.push({
-        type: "class",
-        name: found.groups.name,
-      });
+    [currentIndent, found] = lookForDefinition(classNameRegex, 'func', line, stack, currentIndent, indentSize)
+    if (found) {
       continue;
     }
 
     // Look for function definition
-    found = line.match(funcNameRegex);
-    if (found != null) {
-      let indent = lineIndent(line, indentSize);
-
-      currentIndent = adjustIndentation(indent, currentIndent, stack);
-
-      stack.push({
-        type: "func",
-        name: found.groups.name,
-      });
+    [currentIndent, found] = lookForDefinition(funcNameRegex, 'func', line, stack, currentIndent, indentSize)
+    if (found) {
       continue;
     }
 
@@ -269,6 +298,9 @@ function getFuncCalls(lines, path) {
   }
 
   cleanNodes(funcCalls);
+  if (includeStdLib) {
+    removeStdLibFuncs(funcCalls);
+  }
   return funcCalls;
 }
 
@@ -307,14 +339,14 @@ function getCallCounts(funcCalls) {
   return callCounts;
 }
 
-function runFile(path) {
+function runFile(path, includeStdLib) {
   let data = {};
   try {
     let lines = fs.readFileSync(path, "utf8").toString().split("\r\n");
 
     let fileImports = collectImports(lines);
 
-    let funcCalls = getFuncCalls(lines, path);
+    let funcCalls = getFuncCalls(lines, path, includeStdLib);
     data["funcCalls"] = funcCalls;
 
     // Get func counts for node size
@@ -335,8 +367,15 @@ function runFile(path) {
   return data;
 }
 
-function run(path) {
-  let data = runFile(path);
+function run(path, includeImports, includeStdLib) {
+  if (includeImports == undefined) {
+    includeImports = false;
+  }
+  if (includeStdLib == undefined) {
+    includeStdLib = false;
+  } 
+
+  let data = runFile(path, includeStdLib);
 
   var saveJson = JSON.stringify(data, null, 4);
   fs.writeFile("./public/data.json", saveJson, "utf8", (err) => {
@@ -350,4 +389,4 @@ module.exports = {
   run,
 };
 
-run('./code/updater.py');
+// run('./code/updater.py');
