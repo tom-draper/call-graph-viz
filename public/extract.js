@@ -90,6 +90,7 @@ function lookForDefinition(regex, type, line, stack, currentIndent, indentSize) 
     stack.push({
       type: type,
       name: match.groups.name,
+      aliases: []
     });
     found = true;
   }
@@ -130,22 +131,39 @@ function getClass(stack) {
   return funcsClass;
 }
 
-function insertCalledFunctions(line, nodes, stack) {
+function replaceAliases(calledFunc, stack) {
+  for (let i = stack.length-1; i>=0; i--) {
+    for (let original in stack[i].aliases) {
+      let alias = stack[i].aliases[original]
+      calledFunc = calledFunc.replace(alias, original);
+    }
+  }
+  return calledFunc;
+}
+
+function insertCalledFunctions(line, funcCalls, stack) {
   let found = getCalledFunctions(line);
   if (found.length > 0) {
     for (let i = 0; i < found.length; i++) {
-      let func = "";
+      let callingFunc = "";
       for (let s of stack) {
-        func += "." + s.name;
+        callingFunc += "." + s.name;
       }
-      func = func.slice(1); // Remove dot from beginning
-      if (!(func in nodes)) {
-        nodes[func] = [];
+      callingFunc = callingFunc.slice(1); // Remove dot from beginning
+      if (!(callingFunc in funcCalls)) {
+        funcCalls[callingFunc] = [];
       }
       let funcsClass = getClass(stack);
-      nodes[func].push(
-        found[i].groups.calledFunction.replace("self", funcsClass)
-      );
+
+      // Format called function
+      let calledFunc = found[i].groups.calledFunction;
+      if (calledFunc == 'predictor.calc_score_prediction') {
+        console.log();
+      }
+      calledFunc = calledFunc.replace("self", funcsClass);
+      calledFunc = replaceAliases(calledFunc, stack);
+
+      funcCalls[callingFunc].push(calledFunc);
     }
   }
 }
@@ -262,7 +280,16 @@ function removeStdLibFuncs(funcCalls) {
   }
 }
 
+function addAlisesToStack(line, stack) {
+  let match = line.match(/(?<alias>[^\s]*) = (?<original>[A-Z][^\s]*)\(/);
+  if (match != null) {
+    stack[stack.length-1].aliases[match.groups.original] = match.groups.alias;
+  }
+}
+
 function getFuncCalls(lines, path, includeStdLib) {
+  let fileImports = collectImports(lines);
+
   let file = fileText(path);
   const classNameRegex = /class (?<name>[A-Za-z_]+)(\(.*\))?:/;
   const funcNameRegex = /def (?<name>[A-Za-z_]+)/;
@@ -270,11 +297,13 @@ function getFuncCalls(lines, path, includeStdLib) {
   let line = null;
   let found = null;
   let funcCalls = {};
-  let stack = [{ type: "global", name: file }];
+  let stack = [{ type: "global", name: file , aliases: fileImports['aliases']}];
   let indentSize = 4; // Spaces
   let currentIndent = 0;
   for (let index in lines) {
     line = lines[index];
+
+    addAlisesToStack(line, stack);
 
     // Look for if __name__ == '__main__':
     [currentIndent, found] = lookForIfNameEqualsMain(line, stack, currentIndent, indentSize);
@@ -355,8 +384,6 @@ function runFile(path, includeStdLib) {
     codeFile = removeComments(codeFile)
     let lines = codeFile.split("\r\n");
 
-    let fileImports = collectImports(lines);
-
     let funcCalls = getFuncCalls(lines, path, includeStdLib);
     data["funcCalls"] = funcCalls;
 
@@ -400,4 +427,4 @@ module.exports = {
   run,
 };
 
-run('./code/main.py');
+run('./code/optimise.py');
