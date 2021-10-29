@@ -285,6 +285,12 @@ function addAlisesToStack(line, stack) {
   let match = line.match(/(?<alias>[^\s]*) = (?<original>[A-Z][^\s]*)\(/);
   if (match != null) {
     // stack[stack.length-1].aliases[match.groups.original] = match.groups.alias;
+    // Temporary solution, all aliases are global (at index 0) rather than at 
+    // function/class level on stack -> with current stack system, if alias 
+    // variable is passed as an argument within Python code, alias will not be 
+    // available within called function
+    // TODO: Improve such that aliases can be also available in called function
+    // where alias is passed as arg
     stack[0].aliases[match.groups.original] = match.groups.alias;
   }
 }
