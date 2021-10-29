@@ -1,3 +1,4 @@
+
 function isUpperCase(str) {
   return str === str.toUpperCase()
 }
@@ -40,7 +41,7 @@ function randomColour() {
 }
 
 function newShade(color, amount) {
-  return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+  return '#' + color.replace(/^#/, '').replace(/../g, color => ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
 }
 
 function getColour(groups) {
@@ -56,17 +57,29 @@ function getColour(groups) {
     '#008080',  // Teal
     '#008000',  // Dark green
     '#FFD700',  // Gold
-    '#C71585', 
-    '#FF00FF', 
-    '#00FFFF', 
+    '#C71585',
+    '#FF00FF',
+    '#00FFFF',
   ]
 
-  console.log(groups)
-  console.log(Object.keys(groups).length);
-  if (Object.keys(groups).length > colourStack.length) {
+  if (Object.keys(groups).length >= colourStack.length) {
     return randomColor()
   }
   return colourStack[Object.keys(groups).length]
+}
+
+function addBanner(classes) {
+  let banner = document.getElementById('banner')
+  banner.innerHTML = ''
+  for (let funcClass in classes) {
+    let htmlString =
+      '<div class="function-class" style="background-color:' +
+      classes[funcClass] +
+      '">' +
+      funcClass +
+      '</div>'
+    banner.innerHTML += htmlString
+  }
 }
 
 function buildNextNode(id, func, groups, classes, counts) {
@@ -81,16 +94,11 @@ function buildNextNode(id, func, groups, classes, counts) {
     if (!(funcClass in groups)) {
       let colour = getColour(groups)
       let highlight = newShade(colour, -70);
-      console.log(highlight)
       groups[funcClass] = {
         useDefaultGroups: true,
         color: {
           border: highlight,
           background: colour,
-          // highlight: {
-          //   border: highlight,
-          //   background: 'orange'
-          // }
         },
       }
       classes[funcClass] = colour
@@ -101,41 +109,52 @@ function buildNextNode(id, func, groups, classes, counts) {
   return nextNode
 }
 
-function visualise(funcMap) {
-  // Count number of times each function is mentioned (for vis node size)
-  let funcCounts = {}
-  for (const func in funcMap) {
-    for (const funcCalled of funcMap[func]) {
-      if (!(func in funcCounts)) {
-        funcCounts[func] = 0
-      }
-      if (!(funcCalled in funcCounts)) {
-        funcCounts[funcCalled] = 0
-      }
+function globalCall(func) {
+  // Check if function doing the calling is not just a single word (the name of 
+  // the python file) which indicates the function was not called from within
+  // any class or function
+  return !func.includes('.')
+}
 
-      funcCounts[func] += 1
-      funcCounts[funcCalled] += 1
+function createEdges(callCounts, nodeIds) {
+  // Create edges
+  let e = []
+  for (const func in callCounts) {
+    let [from, to] = func.split('->')
+    // If the function was called at the top level of the file, outside of any
+    // functions then 'from' is the name of a Python file and is not an existing node
+    // No edge will be made -> 'to' may be a floating node
+    if  (!globalCall(from)) {
+      let count = callCounts[func]
+      e.push({ from: nodeIds[from], to: nodeIds[to], value: count })
     }
   }
+  let edges = new vis.DataSet(e)
+  return edges
+}
 
-  // Create nodes
+function createNodes(funcCalls, funcCounts) {
   let nodeIds = {}
   let id = 0
   let groups = {}
   let classes = {}
   let n = []
-  for (const func in funcMap) {
-    // Add defined function as node
-    let count = funcCounts[func]
+  for (const callingFunc in funcCalls) {
 
-    let nextNode = buildNextNode(id, func, groups, classes, count)
-
-    n.push(nextNode)
-    nodeIds[func] = id
-    id += 1
+    // If called function was not called from within another function
+    if (!globalCall(callingFunc)) {
+      // Add defined function as node
+      let count = funcCounts[callingFunc]
+  
+      let nextNode = buildNextNode(id, callingFunc, groups, classes, count)
+  
+      n.push(nextNode)
+      nodeIds[callingFunc] = id
+      id += 1
+    }
 
     // Add any new called functions as nodes
-    for (const calledFunc of funcMap[func]) {
+    for (const calledFunc of funcCalls[callingFunc]) {
       if (!(calledFunc in nodeIds)) {
         let count = funcCounts[calledFunc]
 
@@ -147,44 +166,18 @@ function visualise(funcMap) {
       }
     }
   }
+  let nodes = new vis.DataSet(n)
+  return [nodes, nodeIds, groups, classes]
+}
 
-  var nodes = new vis.DataSet(n)
+function createNetwork(nodes, edges, groups) {
+  let container = document.getElementById('mynetwork')
 
-  let e = []
-
-  // Count number of times each function is called (for vis edge thickness)
-  let callCounts = {}
-  for (const func in funcMap) {
-    console.log(func)
-    // Add any new called functions as nodes
-    for (const calledFunc of funcMap[func]) {
-      if (!(nodeIds[func] + '->' + nodeIds[calledFunc] in callCounts)) {
-        callCounts[nodeIds[func] + '->' + nodeIds[calledFunc]] = 0
-      }
-      callCounts[nodeIds[func] + '->' + nodeIds[calledFunc]] += 1
-    }
-  }
-
-  for (const func in callCounts) {
-    let fromAndTo = func.split('->')
-    let from = fromAndTo[0]
-    let to = fromAndTo[1]
-    // console.log(from, to);
-    let count = callCounts[func]
-    e.push({ from: from, to: to, value: count })
-  }
-
-  var edges = new vis.DataSet(e)
-
-  // create a network
-  var container = document.getElementById('mynetwork')
-
-  // provide the data in the vis format
-  var data = {
+  let data = {
     nodes: nodes,
     edges: edges,
   }
-  var options = {
+  let options = {
     layout: { improvedLayout: false },
     groups: groups,
     edges: {
@@ -195,16 +188,19 @@ function visualise(funcMap) {
     nodes: { shape: 'dot', value: 0.1, opacity: 0.85, borderWidth: 1 },
   }
 
-  var network = new vis.Network(container, data, options)
+  new vis.Network(container, data, options)  // Displays network
+}
 
-  let banner = document.getElementById('banner')
-  for (let funcClass in classes) {
-    let htmlString =
-      '<div class="function-class" style="background-color:' +
-      classes[funcClass] +
-      '">' +
-      funcClass +
-      '</div>'
-    banner.innerHTML += htmlString
-  }
+function visualise(data) {
+  let funcCalls = data['funcCalls']
+  let funcCounts = data['funcCounts']
+  let callCounts = data['callCounts']
+
+  let [nodes, nodeIds, groups, classes] = createNodes(funcCalls, funcCounts)
+
+  addBanner(classes)
+
+  let edges = createEdges(callCounts, nodeIds)
+
+  createNetwork(nodes, edges, groups)
 }

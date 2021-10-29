@@ -2,7 +2,7 @@ const extract = require('./public/extract.js');
 const express = require('express');
 
 
-extract.run();
+extract.run('./code/optimise.py');
 
 
 const app = express()

@@ -160,10 +160,46 @@ function emptyParentesis(calledFunc) {
   return newCalledFunc
 }
 
+function formatStandardLibrary(calledFunc) {
+  /* Standardise the format of calls to the functions in the Python standard library
+     Assumes any func named append, insert, sort,.. etc is a list function
+     Temporary solution, user may have own function called 'append'
+     TODO: needs fixing */
+
+  let newCalledFunc = calledFunc
+
+  let listFuncs = [
+    'append',
+    'insert',
+    'sort',
+    'extend',
+    'pop',
+    'reverse',
+    'remove'
+  ]
+
+  let dictFuncs = [
+    'values',
+    'keys'
+  ]
+
+  let parts = calledFunc.split('.')
+  let func = parts[parts.length - 1]
+  if (listFuncs.includes(func)) {
+    newCalledFunc = 'list.' + func
+  } else if (dictFuncs.includes(func)) {
+    newCalledFunc = 'dict.' + func
+  }
+
+  return newCalledFunc
+}
+
 function cleanNodes(nodes) {
+  // Empty parentesis
   for (let func in nodes) {
     for (let i in nodes[func]) {
       nodes[func][i] = emptyParentesis(nodes[func][i])
+      nodes[func][i] = formatStandardLibrary(nodes[func][i])
     }
   }
 }
@@ -181,76 +217,122 @@ function fileText(path) {
   return s[s.length-1]
 }
 
-function runFile(path) {
+function getFuncCalls(lines, path) {
   let file = fileText(path)
-
   const classNameRegex = /class (?<name>[A-Za-z_]+)(\(.*\))?:/
   const funcNameRegex = /def (?<name>[A-Za-z_]+)/
 
-  let nodes = {}
-  try {
-    let data = fs.readFileSync(path, 'utf8')
-    let lines = data.toString().split('\r\n')
+  let funcCalls = {}
+  let stack = [{ type: 'global', name: file }]
+  let indentSize = 4 // Spaces
+  let currentIndent = 0
+  for (let index in lines) {
+    let line = lines[index]
 
-    let fileImports = collectImports(lines)
-    console.log(fileImports)
-
-    let stack = [{ type: 'global', name: file }]
-    let indentSize = 4 // Spaces
-    let currentIndent = 0
-    for (let index in lines) {
-      let line = lines[index]
-
-      // Look for class definition
-      let found = line.match(classNameRegex)
-      if (found != null) {
-        let indent = lineIndent(line, indentSize)
-    
-        currentIndent = adjustIndentation(indent, currentIndent, stack)
-    
-        stack.push({
-          type: 'class',
-          name: found.groups.name,
-        })
-        continue
-      }
-
-      // Look for function definition
-      found = line.match(funcNameRegex)
-      if (found != null) {
-        let indent = lineIndent(line, indentSize)
-    
-        currentIndent = adjustIndentation(indent, currentIndent, stack)
-    
-        stack.push({
-          type: 'func',
-          name: found.groups.name,
-        })
-        continue
-      }
-
-      // Look for a called function
-      insertCalledFunctions(line, nodes, stack)
+    // Look for class definition
+    let found = line.match(classNameRegex)
+    if (found != null) {
+      let indent = lineIndent(line, indentSize)
+  
+      currentIndent = adjustIndentation(indent, currentIndent, stack)
+  
+      stack.push({
+        type: 'class',
+        name: found.groups.name,
+      })
+      continue
     }
 
-    cleanNodes(nodes)
-    
-    console.log(nodes)
-    console.log('Functions collected:', collected(nodes))
+    // Look for function definition
+    found = line.match(funcNameRegex)
+    if (found != null) {
+      let indent = lineIndent(line, indentSize)
+  
+      currentIndent = adjustIndentation(indent, currentIndent, stack)
+  
+      stack.push({
+        type: 'func',
+        name: found.groups.name,
+      })
+      continue
+    }
 
-    // test(nodes)
+    // Look for a called function
+    insertCalledFunctions(line, funcCalls, stack)
+  }
+
+  cleanNodes(funcCalls)
+  return funcCalls
+}
+
+function getFuncCounts(funcCalls) {
+  // Count number of times each function is mentioned (for vis node size)
+  let funcCounts = {}
+  for (const func in funcCalls) {
+    for (const funcCalled of funcCalls[func]) {
+      if (!(func in funcCounts)) {
+        funcCounts[func] = 0
+      }
+      if (!(funcCalled in funcCounts)) {
+        funcCounts[funcCalled] = 0
+      }
+
+      funcCounts[func] += 1
+      funcCounts[funcCalled] += 1
+    }
+  }
+  return funcCounts
+}
+
+function getCallCounts(funcCalls) {
+  // Count number of times each function is called (for vis edge thickness)
+  let callCounts = {}
+  for (const func in funcCalls) {
+    // Add any new called functions as nodes
+    for (const calledFunc of funcCalls[func]) {
+      let call = func + '->' + calledFunc
+      if (!(call in callCounts)) {
+        callCounts[call] = 0
+      }
+      callCounts[call] += 1
+    }
+  }
+  return callCounts
+}
+
+function runFile(path) {
+  let data = {}
+  try {
+    let lines = fs.readFileSync(path, 'utf8').toString().split('\r\n')
+
+    let fileImports = collectImports(lines)
+
+    let funcCalls = getFuncCalls(lines, path)
+    data['funcCalls'] = funcCalls
+
+    // Get func counts for node size
+    let funcCounts = getFuncCounts(funcCalls)
+    console.log(funcCounts)
+    data['funcCounts'] = funcCounts
+
+    // Get call counts for edge thickness
+    let callCounts = getCallCounts(funcCalls)
+    data['callCounts'] = callCounts
+    
+    console.log(data)
+    // console.log('Functions collected:', collected(data))
   } catch (e) {
     console.log('Error:', e.stack)
   }
 
-  return nodes
+  return data
 }
 
-function run() {
-  let nodes = runFile('./code/data.py')
+function run(path) {
+  let data = runFile(path)
   
-  var saveJson = JSON.stringify(nodes, null, 4)
-  fs.writeFile('./public/nodes.json', saveJson, 'utf8', (err)=>{
+  var saveJson = JSON.stringify(data, null, 4)
+  fs.writeFile('./public/data.json', saveJson, 'utf8', (err)=>{
       if(err){
           console.log(err)
       }

@@ -41,7 +41,7 @@
       const loadJSON = (callback) => {
         const xObj = new XMLHttpRequest()
         xObj.overrideMimeType('application/json')
-        xObj.open('GET', './nodes.json', true)
+        xObj.open('GET', './data.json', true)
         xObj.onreadystatechange = () => {
           if (xObj.readyState === 4 && xObj.status === 200) {
             callback(xObj.responseText)
