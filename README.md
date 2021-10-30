@@ -2,7 +2,7 @@
 
 A Python function call graph visualiser.
 
-![Example](https://user-images.githubusercontent.com/41476809/139538280-36b53ec3-65b4-415e-be33-dbb6d0ec932f.png)
+![Example1](https://user-images.githubusercontent.com/41476809/139538533-8d4ab53d-4dd5-4cc4-a10d-93085f80e89b.png)
 
 ## Usage
 Run the main.js file using node, followed by the Python file to visualise:
