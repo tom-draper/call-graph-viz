@@ -39,30 +39,30 @@ function randomColour() {
   return [colour, highlight];
 }
 
-function newShade(color, amount) {
+function newShade(colour, amount) {
   return (
     "#" +
-    color
+    colour
       .replace(/^#/, "")
-      .replace(/../g, (color) =>
+      .replace(/../g, (colour) =>
         (
           "0" +
-          Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)
+          Math.min(255, Math.max(0, parseInt(colour, 16) + amount)).toString(16)
         ).substr(-2)
       )
   );
 }
 
-function selectColour(colours, groups) {
+function selectColour(colours) {
   let colour = null;
-  if (colours.length > 0) {
+  if (colours.length <= 0) {
     colour = randomColor();
   } else {
-    let i = random.nextInt(colours.length);
-    colour = colours[i]
-    delete colours[i]
+    let i = randomInt(0, colours.length-1);
+    colour = colours.splice(i, 1)[0];  // Remove from list
+    console.log(colour, colours)
   }
-  return colour
+  return colour;
 }
 
 function addBanner(classes) {
@@ -89,7 +89,8 @@ function buildNextNode(id, func, groups, classes, counts, colours) {
   if (funcClass != null) {
     nextNode = { id: id, label: label, group: funcClass, value: counts };
     if (!(funcClass in groups)) {
-      let colour = selectColour(colours, groups);
+      let colour = selectColour(colours);
+      console.log(colour)
       let highlight = newShade(colour, -70);
       groups[funcClass] = {
         useDefaultGroups: true,
@@ -104,21 +105,15 @@ function buildNextNode(id, func, groups, classes, counts, colours) {
     nextNode = { id: id, label: label, value: counts };
   }
 
-  if (func == 'Utilities.convert_team_name_or_initials') {
-    console.log(func)
-    console.log(nextNode);
-  }
-
   return nextNode;
 }
 
 function globalCall(callingFunc) {
   // Check if function was called from outside any function/class
-  return callingFunc == '';
+  return callingFunc == "";
 }
 
 function createEdges(callCounts, nodeIds) {
-  // Create edges
   let e = [];
   for (const func in callCounts) {
     let [from, to] = func.split("->");
@@ -129,9 +124,6 @@ function createEdges(callCounts, nodeIds) {
       let count = callCounts[func];
       // console.log('Edge', from, to, { from: nodeIds[from], to: nodeIds[to], value: count })
       e.push({ from: nodeIds[from], to: nodeIds[to], value: count });
-    } else {
-      console.log(from, to, globalCall(from))
-
     }
   }
   let edges = new vis.DataSet(e);
@@ -142,15 +134,14 @@ function createNodes(funcCalls, funcCounts) {
   let colours = [
     "#ffa609", // Orange
     "#6f6cfe", // Purple
-    "#7ce03b", // Green
-    "#ED2939", // Red
-    "#fefd05", // Yellow
+    // "#7ce03b", // Green
+    // "#ED2939", // Red
+    // "#fefd05", // Yellow
     "#00468C", // Blue
-    "#fb7f81", // Salmon
-    "#800000", // Maroon
+    // "#fb7f81", // Salmon
+    // "#800000", // Maroon
     "#008080", // Teal
-    "#008000", // Dark green
-    "#FFD700", // Gold
+    // "#008000", // Dark green
     "#C71585",
     "#FF00FF",
     "#00FFFF",
@@ -164,14 +155,21 @@ function createNodes(funcCalls, funcCounts) {
   for (const callingFunc in funcCalls) {
     // If called function was not called from within another function
     if (!(callingFunc in nodeIds) && !globalCall(callingFunc)) {
-        // Add defined function as node
-        let count = funcCounts[callingFunc];
+      // Add defined function as node
+      let count = funcCounts[callingFunc];
 
-        let nextNode = buildNextNode(id, callingFunc, groups, classes, count, colours);
+      let nextNode = buildNextNode(
+        id,
+        callingFunc,
+        groups,
+        classes,
+        count,
+        colours
+      );
 
-        n.push(nextNode);
-        nodeIds[callingFunc] = id;
-        id += 1;
+      n.push(nextNode);
+      nodeIds[callingFunc] = id;
+      id += 1;
     }
 
     // Add any new called functions as nodes
@@ -179,7 +177,14 @@ function createNodes(funcCalls, funcCounts) {
       if (!(calledFunc in nodeIds)) {
         let count = funcCounts[calledFunc];
 
-        let nextNode = buildNextNode(id, calledFunc, groups, classes, count, colours);
+        let nextNode = buildNextNode(
+          id,
+          calledFunc,
+          groups,
+          classes,
+          count,
+          colours
+        );
 
         n.push(nextNode);
         nodeIds[calledFunc] = id;

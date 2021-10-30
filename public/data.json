@@ -2,10 +2,11 @@
     "funcCalls": {
         "": [
             "Utilities",
-            "Updater",
-            "Updater.update_all"
+            "OptimisePredictions",
+            "OptimisePredictions.brute_force"
         ],
         "OptimisePredictions.get_prev_matches": [
+            "range",
             "str.replace",
             "str.replace",
             "OptimisePredictions.game_result_tuple",
@@ -20,6 +21,7 @@
             "OptimisePredictions.correct_result"
         ],
         "OptimisePredictions.get_actual_scores": [
+            "open",
             "json.load",
             "dict.values",
             "Utilities.convert_team_name_or_initials",
@@ -33,365 +35,46 @@
             "numpy.linspace",
             "numpy.linspace",
             "Predictor",
-            "OptimisePredictions.score_predictions"
-        ],
-        "Predictor.outdated_prediction_already_made": [
-            "dict.keys",
-            "Utilities.identical_fixtures"
-        ],
-        "Predictor.avg_previous_result": [],
-        "Predictor.adjust_prediction_by_current_form": [
-            "abs"
-        ],
-        "Predictor.adjust_prediction_by_home_advantage": [],
-        "Predictor.neutral_prev_matches": [
-            "dict.items",
-            "str.lower",
-            "list.append"
-        ],
-        "Predictor.starting_score": [
-            "Predictor.avg_previous_result",
-            "Predictor.neutral_prev_matches"
-        ],
-        "Predictor.detailed_score": [],
-        "Predictor.calc_score_prediction": [
-            "Predictor.starting_score",
-            "Predictor.adjust_prediction_by_current_form",
-            "list.append",
-            "Predictor.adjust_prediction_by_home_advantage",
-            "list.append",
-            "Predictor.detailed_score"
-        ],
-        "Predictor.prediction_details": [
-            "Utilities.convert_team_name_or_initials",
-            "Utilities.convert_team_name_or_initials"
-        ],
-        "Predictor.gen_score_predictions": [
-            "form.df.index.values.tolist",
-            "form.get_current_form_rating",
-            "form.get_current_form_rating",
-            "Predictor.calc_score_prediction",
-            "Predictor.prediction_details",
-            ".to_pydatetime"
-        ],
-        "Predictions.__init__": [
-            "Predictor"
-        ],
-        "Predictions.get_predictions": [
-            "json.load"
-        ],
-        "Predictions.get_accuracy": [],
-        "Predictions.print_accuracy": [],
-        "Predictions.signed_float_str": [
-            "str"
-        ],
-        "Predictions.predictions_count": [
-            "dict.values",
-            "Utilities.identical_result",
-            "Predictions.PredictionsCount"
-        ],
-        "Predictions.measure_accuracy": [
-            "Predictions.predictions_count"
-        ],
-        "Predictions.max_prediction_id": [],
-        "Predictions.exact_prediction_already_made": [
-            "dict.keys"
-        ],
-        "Predictions.update_existing_prediction": [],
-        "Predictions.insert_new_prediction": [
-            "dict.keys",
-            "Predictions.update_existing_prediction",
-            "list.append"
-        ],
-        "Predictions.insert_new_predictions": [
-            "Predictions.max_prediction_id",
-            "dict.values",
-            "datetime.strftime",
-            "Predictions.exact_prediction_already_made",
-            "datetime.strftime",
-            "Predictions.insert_new_prediction"
-        ],
-        "Predictions.insert_actual_scores": [
-            "numpy.datetime_as_string"
-        ],
-        "Predictions.sort_predictions": [
-            "dict"
-        ],
-        "Predictions.update_json_file": [
-            "json.load",
-            "Predictions.insert_new_predictions",
-            "Predictions.insert_actual_scores",
-            "Predictions.sort_predictions",
-            "Predictions.measure_accuracy",
-            "json.dump"
-        ],
-        "Predictions.prediction_details": [
-            "Utilities.convert_team_name_or_initials",
-            "Utilities.convert_team_name_or_initials"
-        ],
-        "Predictions.get_actual_scores": [
-            "range",
-            ".iterrows",
-            "numpy.datetime_as_string",
-            "Utilities.convert_team_name_or_initials",
-            "Utilities.convert_team_name_or_initials",
-            "Utilities.extract_int_score",
-            "actual_scores.add"
-        ],
-        "Predictions.update": [
-            "Predictions.predictor.gen_score_predictions",
-            "Predictions.get_actual_scores",
-            "Predictions.update_json_file",
-            "Predictions.print_accuracy",
-            "pandas.DataFrame.from_dict"
-        ],
-        "Updater.__init__": [
-            "Data",
-            "Visualiser",
-            "join",
-            "load_dotenv",
-            "os.getenv",
-            "os.getenv",
-            "os.getenv"
-        ],
-        "Updater.fixtures_data": [
-            "requests.get",
-            "ValueError",
-            "response.json",
-            "json.load"
-        ],
-        "Updater.standings_data": [
-            "requests.get",
-            "ValueError",
-            "response.json",
-            "json.load"
-        ],
-        "Updater.fetch_current_season": [
-            "Updater.fixtures_data",
-            "Updater.standings_data"
-        ],
-        "Updater.load_previous_fixtures": [
-            "Updater.fixtures_data",
-            "Updater.standings_data"
-        ],
-        "Updater.fetch_json_data": [
-            "Updater.fetch_current_season",
-            "Updater.load_previous_fixtures",
-            "datetime.now"
-        ],
-        "Updater.save_data": [
-            "json.dump"
-        ],
-        "Updater.get_logo_urls": [
-            "str.replace"
-        ],
-        "Updater.update_dataframes": [
-            "Updater.data.standings.update",
-            "Updater.data.fixtures.update",
-            "Updater.data.team_ratings.update",
-            "Updater.data.home_advantages.update",
-            "Updater.data.form.update",
-            "Updater.data.position_over_time.update",
-            "Updater.data.upcoming.update",
-            "Updater.data.season_stats.update"
-        ],
-        "Updater.save_tables": [
-            "Updater.data.standings.save_to_html",
-            "Updater.data.fixtures.save_to_html",
-            "Updater.data.team_ratings.save_to_html",
-            "Updater.data.home_advantages.save_to_html",
-            "Updater.data.form.save_to_html",
-            "Updater.data.position_over_time.save_to_html",
-            "Updater.data.upcoming.save_to_html",
-            "Updater.data.season_stats.save_to_html"
-        ],
-        "Updater.update_data": [
-            "Updater.get_logo_urls",
-            "dict.keys",
-            "Updater.update_dataframes"
-        ],
-        "Updater.update_all": [
-            "Updater.fetch_json_data",
-            "Updater.fetch_json_data",
-            "Updater.update_data",
-            "Updater.save_data",
-            "Updater.save_tables",
-            "Updater.visualiser.update"
-        ],
-        "TwoWayDict.__init__": [
-            "dict.items",
-            "TwoWayDict.__setitem__"
-        ],
-        "TwoWayDict.__setitem__": [
-            "dict.__setitem__",
-            "dict.__setitem__"
-        ],
-        "TwoWayDict.__delitem__": [
-            "dict.__delitem__",
-            "dict.__delitem__"
-        ],
-        "TwoWayDict.__len__": [
-            "dict.__len__"
-        ],
-        "Utilities": [
-            "TwoWayDict"
-        ],
-        "Utilities.convert_team_name_or_initials": [
-            "dict.keys",
-            "KeyError",
-            "str.upper"
-        ],
-        "Utilities.extract_int_score": [
-            "str.split"
-        ],
-        "Utilities.extract_str_score": [
-            "str.split"
-        ],
-        "Utilities.extract_int_score_from_scoreline": [
-            "str.split"
-        ],
-        "Utilities.extract_str_score_from_scoreline": [
-            "str.split"
-        ],
-        "Utilities.identical_fixtures": [
-            "str.split",
-            "str.split"
-        ],
-        "Utilities.format_scoreline_str_from_str": [
-            "Utilities.convert_team_name_or_initials",
-            "Utilities.convert_team_name_or_initials"
-        ],
-        "Utilities.format_scoreline_str": [
-            "Utilities.convert_team_name_or_initials",
-            "Utilities.convert_team_name_or_initials"
+            "OptimisePredictions.score_predictions",
+            "print",
+            "print",
+            "print",
+            "print",
+            "print",
+            "print"
         ]
     },
     "funcCounts": {
         "": 3,
-        "Utilities": 2,
-        "Updater": 2,
-        "Updater.update_all": 8,
-        "OptimisePredictions.get_prev_matches": 5,
-        "str.replace": 3,
+        "Utilities": 1,
+        "OptimisePredictions": 1,
+        "OptimisePredictions.brute_force": 14,
+        "OptimisePredictions.get_prev_matches": 6,
+        "range": 1,
+        "str.replace": 2,
         "OptimisePredictions.game_result_tuple": 1,
-        "list.append": 6,
+        "list.append": 2,
         "OptimisePredictions.score_predictions": 7,
-        "form.get_current_form_rating": 4,
+        "form.get_current_form_rating": 2,
         "predictor.calc_score_prediction": 1,
         "predictor.prediction_details": 1,
         "OptimisePredictions.correct_result": 1,
-        "OptimisePredictions.get_actual_scores": 6,
-        "json.load": 5,
-        "dict.values": 3,
-        "Utilities.convert_team_name_or_initials": 15,
-        "OptimisePredictions.brute_force": 7,
+        "OptimisePredictions.get_actual_scores": 7,
+        "open": 1,
+        "json.load": 1,
+        "dict.values": 1,
+        "Utilities.convert_team_name_or_initials": 2,
+        "Updater": 1,
+        "Updater.update_all": 1,
         "numpy.linspace": 2,
-        "Predictor": 2,
-        "Predictor.outdated_prediction_already_made": 2,
-        "dict.keys": 5,
-        "Utilities.identical_fixtures": 3,
-        "Predictor.adjust_prediction_by_current_form": 2,
-        "abs": 1,
-        "Predictor.neutral_prev_matches": 4,
-        "dict.items": 2,
-        "str.lower": 1,
-        "Predictor.starting_score": 3,
-        "Predictor.avg_previous_result": 1,
-        "Predictor.calc_score_prediction": 7,
-        "Predictor.adjust_prediction_by_home_advantage": 1,
-        "Predictor.detailed_score": 1,
-        "Predictor.prediction_details": 3,
-        "Predictor.gen_score_predictions": 6,
-        "form.df.index.values.tolist": 1,
-        ".to_pydatetime": 1,
-        "Predictions.__init__": 1,
-        "Predictions.get_predictions": 1,
-        "Predictions.signed_float_str": 1,
-        "str": 1,
-        "Predictions.predictions_count": 4,
-        "Utilities.identical_result": 1,
-        "Predictions.PredictionsCount": 1,
-        "Predictions.measure_accuracy": 2,
-        "Predictions.exact_prediction_already_made": 2,
-        "Predictions.insert_new_prediction": 4,
-        "Predictions.update_existing_prediction": 1,
-        "Predictions.insert_new_predictions": 7,
-        "Predictions.max_prediction_id": 1,
-        "datetime.strftime": 2,
-        "Predictions.insert_actual_scores": 2,
-        "numpy.datetime_as_string": 2,
-        "Predictions.sort_predictions": 2,
-        "dict": 1,
-        "Predictions.update_json_file": 7,
-        "json.dump": 2,
-        "Predictions.prediction_details": 2,
-        "Predictions.get_actual_scores": 8,
-        "range": 1,
-        ".iterrows": 1,
-        "Utilities.extract_int_score": 2,
-        "actual_scores.add": 1,
-        "Predictions.update": 5,
-        "Predictions.predictor.gen_score_predictions": 1,
-        "Predictions.print_accuracy": 1,
-        "pandas.DataFrame.from_dict": 1,
-        "Updater.__init__": 7,
-        "Data": 1,
-        "Visualiser": 1,
-        "join": 1,
-        "load_dotenv": 1,
-        "os.getenv": 3,
-        "Updater.fixtures_data": 6,
-        "requests.get": 2,
-        "ValueError": 2,
-        "response.json": 2,
-        "Updater.standings_data": 6,
-        "Updater.fetch_current_season": 3,
-        "Updater.load_previous_fixtures": 3,
-        "Updater.fetch_json_data": 5,
-        "datetime.now": 1,
-        "Updater.save_data": 2,
-        "Updater.get_logo_urls": 2,
-        "Updater.update_dataframes": 9,
-        "Updater.data.standings.update": 1,
-        "Updater.data.fixtures.update": 1,
-        "Updater.data.team_ratings.update": 1,
-        "Updater.data.home_advantages.update": 1,
-        "Updater.data.form.update": 1,
-        "Updater.data.position_over_time.update": 1,
-        "Updater.data.upcoming.update": 1,
-        "Updater.data.season_stats.update": 1,
-        "Updater.save_tables": 9,
-        "Updater.data.standings.save_to_html": 1,
-        "Updater.data.fixtures.save_to_html": 1,
-        "Updater.data.team_ratings.save_to_html": 1,
-        "Updater.data.home_advantages.save_to_html": 1,
-        "Updater.data.form.save_to_html": 1,
-        "Updater.data.position_over_time.save_to_html": 1,
-        "Updater.data.upcoming.save_to_html": 1,
-        "Updater.data.season_stats.save_to_html": 1,
-        "Updater.update_data": 4,
-        "Updater.visualiser.update": 1,
-        "TwoWayDict.__init__": 2,
-        "TwoWayDict.__setitem__": 3,
-        "dict.__setitem__": 2,
-        "TwoWayDict.__delitem__": 2,
-        "dict.__delitem__": 2,
-        "TwoWayDict.__len__": 1,
-        "dict.__len__": 1,
-        "TwoWayDict": 1,
-        "KeyError": 1,
-        "str.upper": 1,
-        "str.split": 6,
-        "Utilities.extract_str_score": 1,
-        "Utilities.extract_int_score_from_scoreline": 1,
-        "Utilities.extract_str_score_from_scoreline": 1,
-        "Utilities.format_scoreline_str_from_str": 2,
-        "Utilities.format_scoreline_str": 2
+        "Predictor": 1,
+        "print": 6
     },
     "callCounts": {
         "->Utilities": 1,
-        "->Updater": 1,
-        "->Updater.update_all": 1,
+        "->OptimisePredictions": 1,
+        "->OptimisePredictions.brute_force": 1,
+        "OptimisePredictions.get_prev_matches->range": 1,
         "OptimisePredictions.get_prev_matches->str.replace": 2,
         "OptimisePredictions.get_prev_matches->OptimisePredictions.game_result_tuple": 1,
         "OptimisePredictions.get_prev_matches->list.append": 1,
@@ -400,6 +83,7 @@
         "OptimisePredictions.score_predictions->predictor.calc_score_prediction": 1,
         "OptimisePredictions.score_predictions->predictor.prediction_details": 1,
         "OptimisePredictions.score_predictions->OptimisePredictions.correct_result": 1,
+        "OptimisePredictions.get_actual_scores->open": 1,
         "OptimisePredictions.get_actual_scores->json.load": 1,
         "OptimisePredictions.get_actual_scores->dict.values": 1,
         "OptimisePredictions.get_actual_scores->Utilities.convert_team_name_or_initials": 2,
@@ -410,122 +94,6 @@
         "OptimisePredictions.brute_force->numpy.linspace": 2,
         "OptimisePredictions.brute_force->Predictor": 1,
         "OptimisePredictions.brute_force->OptimisePredictions.score_predictions": 1,
-        "Predictor.outdated_prediction_already_made->dict.keys": 1,
-        "Predictor.outdated_prediction_already_made->Utilities.identical_fixtures": 1,
-        "Predictor.adjust_prediction_by_current_form->abs": 1,
-        "Predictor.neutral_prev_matches->dict.items": 1,
-        "Predictor.neutral_prev_matches->str.lower": 1,
-        "Predictor.neutral_prev_matches->list.append": 1,
-        "Predictor.starting_score->Predictor.avg_previous_result": 1,
-        "Predictor.starting_score->Predictor.neutral_prev_matches": 1,
-        "Predictor.calc_score_prediction->Predictor.starting_score": 1,
-        "Predictor.calc_score_prediction->Predictor.adjust_prediction_by_current_form": 1,
-        "Predictor.calc_score_prediction->list.append": 2,
-        "Predictor.calc_score_prediction->Predictor.adjust_prediction_by_home_advantage": 1,
-        "Predictor.calc_score_prediction->Predictor.detailed_score": 1,
-        "Predictor.prediction_details->Utilities.convert_team_name_or_initials": 2,
-        "Predictor.gen_score_predictions->form.df.index.values.tolist": 1,
-        "Predictor.gen_score_predictions->form.get_current_form_rating": 2,
-        "Predictor.gen_score_predictions->Predictor.calc_score_prediction": 1,
-        "Predictor.gen_score_predictions->Predictor.prediction_details": 1,
-        "Predictor.gen_score_predictions->.to_pydatetime": 1,
-        "Predictions.__init__->Predictor": 1,
-        "Predictions.get_predictions->json.load": 1,
-        "Predictions.signed_float_str->str": 1,
-        "Predictions.predictions_count->dict.values": 1,
-        "Predictions.predictions_count->Utilities.identical_result": 1,
-        "Predictions.predictions_count->Predictions.PredictionsCount": 1,
-        "Predictions.measure_accuracy->Predictions.predictions_count": 1,
-        "Predictions.exact_prediction_already_made->dict.keys": 1,
-        "Predictions.insert_new_prediction->dict.keys": 1,
-        "Predictions.insert_new_prediction->Predictions.update_existing_prediction": 1,
-        "Predictions.insert_new_prediction->list.append": 1,
-        "Predictions.insert_new_predictions->Predictions.max_prediction_id": 1,
-        "Predictions.insert_new_predictions->dict.values": 1,
-        "Predictions.insert_new_predictions->datetime.strftime": 2,
-        "Predictions.insert_new_predictions->Predictions.exact_prediction_already_made": 1,
-        "Predictions.insert_new_predictions->Predictions.insert_new_prediction": 1,
-        "Predictions.insert_actual_scores->numpy.datetime_as_string": 1,
-        "Predictions.sort_predictions->dict": 1,
-        "Predictions.update_json_file->json.load": 1,
-        "Predictions.update_json_file->Predictions.insert_new_predictions": 1,
-        "Predictions.update_json_file->Predictions.insert_actual_scores": 1,
-        "Predictions.update_json_file->Predictions.sort_predictions": 1,
-        "Predictions.update_json_file->Predictions.measure_accuracy": 1,
-        "Predictions.update_json_file->json.dump": 1,
-        "Predictions.prediction_details->Utilities.convert_team_name_or_initials": 2,
-        "Predictions.get_actual_scores->range": 1,
-        "Predictions.get_actual_scores->.iterrows": 1,
-        "Predictions.get_actual_scores->numpy.datetime_as_string": 1,
-        "Predictions.get_actual_scores->Utilities.convert_team_name_or_initials": 2,
-        "Predictions.get_actual_scores->Utilities.extract_int_score": 1,
-        "Predictions.get_actual_scores->actual_scores.add": 1,
-        "Predictions.update->Predictions.predictor.gen_score_predictions": 1,
-        "Predictions.update->Predictions.get_actual_scores": 1,
-        "Predictions.update->Predictions.update_json_file": 1,
-        "Predictions.update->Predictions.print_accuracy": 1,
-        "Predictions.update->pandas.DataFrame.from_dict": 1,
-        "Updater.__init__->Data": 1,
-        "Updater.__init__->Visualiser": 1,
-        "Updater.__init__->join": 1,
-        "Updater.__init__->load_dotenv": 1,
-        "Updater.__init__->os.getenv": 3,
-        "Updater.fixtures_data->requests.get": 1,
-        "Updater.fixtures_data->ValueError": 1,
-        "Updater.fixtures_data->response.json": 1,
-        "Updater.fixtures_data->json.load": 1,
-        "Updater.standings_data->requests.get": 1,
-        "Updater.standings_data->ValueError": 1,
-        "Updater.standings_data->response.json": 1,
-        "Updater.standings_data->json.load": 1,
-        "Updater.fetch_current_season->Updater.fixtures_data": 1,
-        "Updater.fetch_current_season->Updater.standings_data": 1,
-        "Updater.load_previous_fixtures->Updater.fixtures_data": 1,
-        "Updater.load_previous_fixtures->Updater.standings_data": 1,
-        "Updater.fetch_json_data->Updater.fetch_current_season": 1,
-        "Updater.fetch_json_data->Updater.load_previous_fixtures": 1,
-        "Updater.fetch_json_data->datetime.now": 1,
-        "Updater.save_data->json.dump": 1,
-        "Updater.get_logo_urls->str.replace": 1,
-        "Updater.update_dataframes->Updater.data.standings.update": 1,
-        "Updater.update_dataframes->Updater.data.fixtures.update": 1,
-        "Updater.update_dataframes->Updater.data.team_ratings.update": 1,
-        "Updater.update_dataframes->Updater.data.home_advantages.update": 1,
-        "Updater.update_dataframes->Updater.data.form.update": 1,
-        "Updater.update_dataframes->Updater.data.position_over_time.update": 1,
-        "Updater.update_dataframes->Updater.data.upcoming.update": 1,
-        "Updater.update_dataframes->Updater.data.season_stats.update": 1,
-        "Updater.save_tables->Updater.data.standings.save_to_html": 1,
-        "Updater.save_tables->Updater.data.fixtures.save_to_html": 1,
-        "Updater.save_tables->Updater.data.team_ratings.save_to_html": 1,
-        "Updater.save_tables->Updater.data.home_advantages.save_to_html": 1,
-        "Updater.save_tables->Updater.data.form.save_to_html": 1,
-        "Updater.save_tables->Updater.data.position_over_time.save_to_html": 1,
-        "Updater.save_tables->Updater.data.upcoming.save_to_html": 1,
-        "Updater.save_tables->Updater.data.season_stats.save_to_html": 1,
-        "Updater.update_data->Updater.get_logo_urls": 1,
-        "Updater.update_data->dict.keys": 1,
-        "Updater.update_data->Updater.update_dataframes": 1,
-        "Updater.update_all->Updater.fetch_json_data": 2,
-        "Updater.update_all->Updater.update_data": 1,
-        "Updater.update_all->Updater.save_data": 1,
-        "Updater.update_all->Updater.save_tables": 1,
-        "Updater.update_all->Updater.visualiser.update": 1,
-        "TwoWayDict.__init__->dict.items": 1,
-        "TwoWayDict.__init__->TwoWayDict.__setitem__": 1,
-        "TwoWayDict.__setitem__->dict.__setitem__": 2,
-        "TwoWayDict.__delitem__->dict.__delitem__": 2,
-        "TwoWayDict.__len__->dict.__len__": 1,
-        "Utilities->TwoWayDict": 1,
-        "Utilities.convert_team_name_or_initials->dict.keys": 1,
-        "Utilities.convert_team_name_or_initials->KeyError": 1,
-        "Utilities.convert_team_name_or_initials->str.upper": 1,
-        "Utilities.extract_int_score->str.split": 1,
-        "Utilities.extract_str_score->str.split": 1,
-        "Utilities.extract_int_score_from_scoreline->str.split": 1,
-        "Utilities.extract_str_score_from_scoreline->str.split": 1,
-        "Utilities.identical_fixtures->str.split": 2,
-        "Utilities.format_scoreline_str_from_str->Utilities.convert_team_name_or_initials": 2,
-        "Utilities.format_scoreline_str->Utilities.convert_team_name_or_initials": 2
+        "OptimisePredictions.brute_force->print": 6
     }
 }

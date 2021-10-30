@@ -1,36 +1,36 @@
 const fs = require("fs");
 
 function collectImports(lines) {
-  let file_imports = { importOrigin: {}, simpleImports: [], aliases: {} };
+  let fileImports = { importOrigin: {}, simpleImports: [], aliases: {} };
   const fromImport = /from (?<origin>.*) import (?<import>.*)/;
   const aliasImport = /import (?<import>.*) as (?<alias>.*)/;
   const simpleImport = /^import (?<import>.[a-z0-9_.-]+)/;
 
-  let found = null;
+  let match = null;
   for (let line of lines) {
-    found = line.match(fromImport);
-    if (found != null) {
-      let imports = found.groups.import.split(", ");
-      for (let im of imports) {
-        file_imports["importOrigin"][im] = found.groups.origin;
+    match = line.match(fromImport);
+    if (match != null) {
+      let imports = match.groups.import.split(", ");
+      for (let _import of imports) {
+        fileImports["importOrigin"][_import] = match.groups.origin;
       }
     }
 
-    found = line.match(simpleImport);
-    if (found != null) {
-      let imports = found.groups.import.split(", ");
-      for (let im of imports) {
-        file_imports["simpleImports"].push(im);
+    match = line.match(simpleImport);
+    if (match != null) {
+      let imports = match.groups.import.split(", ");
+      for (let _import of imports) {
+        fileImports["simpleImports"].push(_import);
       }
     }
 
-    found = line.match(aliasImport);
-    if (found != null) {
-      file_imports["aliases"][found.groups.import] = found.groups.alias;
+    match = line.match(aliasImport);
+    if (match != null) {
+      fileImports["aliases"][match.groups.import] = match.groups.alias;
     }
   }
 
-  return file_imports;
+  return fileImports;
 }
 
 function lineIndent(line, indentSize) {
@@ -150,9 +150,9 @@ function replaceAliases(calledFunc, stack) {
 }
 
 function insertCalledFunctions(line, funcCalls, stack) {
-  let found = getCalledFunctions(line);
-  if (found.length > 0) {
-    for (let i = 0; i < found.length; i++) {
+  let match = getCalledFunctions(line);
+  if (match.length > 0) {
+    for (let i = 0; i < match.length; i++) {
       let callingFunc = "";
       for (let s of stack) {
         callingFunc += "." + s.name;
@@ -164,7 +164,7 @@ function insertCalledFunctions(line, funcCalls, stack) {
       let funcsClass = getClass(stack);
 
       // Format called function
-      let calledFunc = found[i].groups.calledFunction;
+      let calledFunc = match[i].groups.calledFunction;
       calledFunc = calledFunc.replace("self", funcsClass);
       calledFunc = replaceAliases(calledFunc, stack);
 
@@ -436,7 +436,7 @@ function getFuncCalls(lines, path, includeStdLib) {
   }
 
   cleanNodes(funcCalls);
-  if (includeStdLib) {
+  if (!includeStdLib) {
     removeStdLibFuncs(funcCalls);
   }
   return funcCalls;
@@ -581,4 +581,4 @@ module.exports = {
   run,
 };
 
-run("./code/optimise.py", true, true);
+// run("./code/optimise.py", true, true);
