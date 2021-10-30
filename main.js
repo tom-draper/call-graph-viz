@@ -8,7 +8,7 @@ function getFilePath() {
   // Check for no input
   if (file == undefined) {
     console.log("Using default main.py\nRun \"node main [filename].py\" to specify a file within the code directory")
-    file = 'main.py'
+    file = 'optimise.py'
   }
   
   // Add .py if missing
@@ -26,8 +26,8 @@ function handleArgs () {
 
 
 let path = handleArgs()
-let includeImports = false;
-let includeStdLib = false;
+let includeImports = true;
+let includeStdLib = true;
 
 extract.run(path, includeImports, includeStdLib); 
 

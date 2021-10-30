@@ -7,4 +7,4 @@ TODO:
 - [X] Include option for Python standard library to be excluded
 - [X] Improve styling of banner to handle when screen width becomes too small
 - [X] Allow user to input target .py file from terminal
-  
+- [] Handle functions within a string

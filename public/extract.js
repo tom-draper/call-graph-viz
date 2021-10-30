@@ -80,7 +80,14 @@ function test(nodes) {
   console.log("Accuracy:", accuracy * 100, "%");
 }
 
-function lookForDefinition(regex, type, line, stack, currentIndent, indentSize) {
+function lookForDefinition(
+  regex,
+  type,
+  line,
+  stack,
+  currentIndent,
+  indentSize
+) {
   let found = false;
   let match = line.match(regex);
   if (match != null) {
@@ -90,7 +97,7 @@ function lookForDefinition(regex, type, line, stack, currentIndent, indentSize) 
     stack.push({
       type: type,
       name: match.groups.name,
-      aliases: []
+      aliases: [],
     });
     found = true;
   }
@@ -106,7 +113,7 @@ function lookForIfNameEqualsMain(line, stack, currentIndent, indentSize) {
     currentIndent = adjustIndentation(indent, currentIndent, stack);
     found = true;
   }
-  return [currentIndent, found]
+  return [currentIndent, found];
 }
 
 function getCalledFunctions(line) {
@@ -132,10 +139,10 @@ function getClass(stack) {
 }
 
 function replaceAliases(calledFunc, stack) {
-  for (let i = stack.length-1; i>=0; i--) {
+  for (let i = stack.length - 1; i >= 0; i--) {
     for (let original in stack[i].aliases) {
-      let alias = stack[i].aliases[original]
-      let regex = new RegExp(`\\b${alias}\\b`, 'g')
+      let alias = stack[i].aliases[original];
+      let regex = new RegExp(`\\b${alias}\\b`, "g");
       calledFunc = calledFunc.replace(regex, original);
     }
   }
@@ -158,7 +165,7 @@ function insertCalledFunctions(line, funcCalls, stack) {
 
       // Format called function
       let calledFunc = found[i].groups.calledFunction;
-      if (calledFunc == 'predictor.calc_score_prediction') {
+      if (calledFunc == "predictor.calc_score_prediction") {
         console.log();
       }
       calledFunc = calledFunc.replace("self", funcsClass);
@@ -260,22 +267,88 @@ function removeItemAll(arr, value) {
 }
 
 function removeStdLibFuncs(funcCalls) {
-  let stdLibFuncs = ['abs', 'aiter', 'all', 'any', 'anext', 'ascii', 'bin', 'bool',
-                     'breakpoint', 'bytearray', 'bytes', 'callable', 'chr', 'char', 
-                     'classmethod', 'compile', 'complex', 'delattr', 'dict', 'dir',
-                     'divmod', 'enumerate', 'eval', 'exec', 'filter', 'float', 'format',
-                     'frozenset', 'getattr', 'globals', 'hasattr', 'hash', 'help',
-                     'hex', 'id', 'input', 'int', 'isinstance', 'issubclass', 'iter',
-                     'len', 'list', 'locals', 'map', 'max', 'memoryview', 'min', 
-                     'next', 'object', 'oct', 'open', 'ord', 'pow', 'print', 'property',
-                     'range', 'repr', 'reversed', 'round', 'set', 'setattr', 'slice',
-                     'sorted', 'staticmethod', 'str', 'sum', 'super', 'tuple', 'type',
-                     'vars', 'zip', '__import__']
+  let stdLibFuncs = [
+    "abs",
+    "aiter",
+    "all",
+    "any",
+    "anext",
+    "ascii",
+    "bin",
+    "bool",
+    "breakpoint",
+    "bytearray",
+    "bytes",
+    "callable",
+    "chr",
+    "char",
+    "classmethod",
+    "compile",
+    "complex",
+    "delattr",
+    "dict",
+    "dir",
+    "divmod",
+    "enumerate",
+    "eval",
+    "exec",
+    "filter",
+    "float",
+    "format",
+    "frozenset",
+    "getattr",
+    "globals",
+    "hasattr",
+    "hash",
+    "help",
+    "hex",
+    "id",
+    "input",
+    "int",
+    "isinstance",
+    "issubclass",
+    "iter",
+    "len",
+    "list",
+    "locals",
+    "map",
+    "max",
+    "memoryview",
+    "min",
+    "next",
+    "object",
+    "oct",
+    "open",
+    "ord",
+    "pow",
+    "print",
+    "property",
+    "range",
+    "repr",
+    "reversed",
+    "round",
+    "set",
+    "setattr",
+    "slice",
+    "sorted",
+    "staticmethod",
+    "str",
+    "sum",
+    "super",
+    "tuple",
+    "type",
+    "vars",
+    "zip",
+    "__import__",
+  ];
   for (let callingFunc in funcCalls) {
     for (let i in funcCalls[callingFunc]) {
-      let calledFunc = funcCalls[callingFunc][i]
+      let calledFunc = funcCalls[callingFunc][i];
       if (stdLibFuncs.includes(calledFunc)) {
-        funcCalls[callingFunc] = removeItemAll(funcCalls[callingFunc], calledFunc)
+        funcCalls[callingFunc] = removeItemAll(
+          funcCalls[callingFunc],
+          calledFunc
+        );
       }
     }
   }
@@ -285,9 +358,9 @@ function addAlisesToStack(line, stack) {
   let match = line.match(/(?<alias>[^\s]*) = (?<original>[A-Z][^\s]*)\(/);
   if (match != null) {
     // stack[stack.length-1].aliases[match.groups.original] = match.groups.alias;
-    // Temporary solution, all aliases are global (at index 0) rather than at 
-    // function/class level on stack -> with current stack system, if alias 
-    // variable is passed as an argument within Python code, alias will not be 
+    // Temporary solution, all aliases are global (at index 0) rather than at
+    // function/class level on stack -> with current stack system, if alias
+    // variable is passed as an argument within Python code, alias will not be
     // available within called function
     // TODO: Improve such that aliases can be also available in called function
     // where alias is passed as arg
@@ -305,7 +378,7 @@ function getFuncCalls(lines, path, includeStdLib) {
   let line = null;
   let found = null;
   let funcCalls = {};
-  let stack = [{ type: "global", name: file , aliases: fileImports['aliases']}];
+  let stack = [{ type: "global", name: file, aliases: fileImports["aliases"] }];
   let indentSize = 4; // Spaces
   let currentIndent = 0;
   for (let index in lines) {
@@ -314,19 +387,38 @@ function getFuncCalls(lines, path, includeStdLib) {
     addAlisesToStack(line, stack);
 
     // Look for if __name__ == '__main__':
-    [currentIndent, found] = lookForIfNameEqualsMain(line, stack, currentIndent, indentSize);
+    [currentIndent, found] = lookForIfNameEqualsMain(
+      line,
+      stack,
+      currentIndent,
+      indentSize
+    );
     if (found) {
       continue;
     }
 
     // Look for class definition
-    [currentIndent, found] = lookForDefinition(classNameRegex, 'func', line, stack, currentIndent, indentSize)
+    [currentIndent, found] = lookForDefinition(
+      classNameRegex,
+      "func",
+      line,
+      stack,
+      currentIndent,
+      indentSize
+    );
     if (found) {
       continue;
     }
 
     // Look for function definition
-    [currentIndent, found] = lookForDefinition(funcNameRegex, 'func', line, stack, currentIndent, indentSize)
+    [currentIndent, found] = lookForDefinition(
+      funcNameRegex,
+      "func",
+      line,
+      stack,
+      currentIndent,
+      indentSize
+    );
     if (found) {
       continue;
     }
@@ -379,17 +471,21 @@ function getCallCounts(funcCalls) {
 
 function removeComments(code) {
   // Remove multiline comments
-  code = code.replace(/(['"])\1\1[\d\D]*?\1{3}/g, '');
+  code = code.replace(/(['"])\1\1[\d\D]*?\1{3}/g, "");
   // Remove inline comments
-  code = code.replace(/#.*/g, '')
+  code = code.replace(/#.*/g, "");
   return code;
 }
 
 function runFile(path, includeStdLib) {
+  let parts = path.split('/')
+  let filename = parts[parts.length-1]
+  console.log('Extracting:', filename)
+
   let data = {};
   try {
-    let codeFile = fs.readFileSync(path, "utf8").toString()
-    codeFile = removeComments(codeFile)
+    let codeFile = fs.readFileSync(path, "utf8").toString();
+    codeFile = removeComments(codeFile);
     let lines = codeFile.split("\r\n");
 
     let funcCalls = getFuncCalls(lines, path, includeStdLib);
@@ -397,15 +493,13 @@ function runFile(path, includeStdLib) {
 
     // Get func counts for node size
     let funcCounts = getFuncCounts(funcCalls);
-    console.log(funcCounts);
     data["funcCounts"] = funcCounts;
 
     // Get call counts for edge thickness
     let callCounts = getCallCounts(funcCalls);
     data["callCounts"] = callCounts;
 
-    console.log(data);
-    // console.log('Functions collected:', collected(data))
+    console.log('Functions collected:', collected(data))
   } catch (e) {
     console.log("Error:", e.stack);
   }
@@ -413,18 +507,56 @@ function runFile(path, includeStdLib) {
   return data;
 }
 
-function run(path, includeImports, includeStdLib) {
+function getImportedFiles(path) {
+  let importedFiles = [];
+  let codeFile;
+  try {
+    codeFile = fs.readFileSync(path, "utf8").toString();
+  } catch (e) {
+    console.log("Error:", e.stack);
+  }
+  
+  let matches = [...codeFile.matchAll(/from (?<filename>.*) import/g)];
+  for (let match of matches) {
+    let filename = match.groups.filename + ".py";
+    try {
+      let importedFilePath = "./code/" + filename;
+      fs.readFileSync(importedFilePath, "utf8").toString(); // Attempt
+      importedFiles.push(importedFilePath);
+    } catch (e) {
+      console.log("Error: Cannot fetch", filename);
+    }
+  }
+
+  return importedFiles;
+}
+
+function run(filepath, includeImports, includeStdLib) {
   if (includeImports == undefined) {
     includeImports = false;
   }
   if (includeStdLib == undefined) {
-    includeStdLib = false;
-  } 
+    includeStdLib = true;
+  }
 
-  let data = runFile(path, includeStdLib);
+  let paths = [filepath];
+  if (includeImports) {
+    let importedFiles = getImportedFiles(filepath);
+    paths = paths.concat(importedFiles);
+  }
+
+  let data = {'funcCalls': {}, 'funcCounts': {}, 'callCounts': {}}
+  for (let path of paths) {
+    let temp = runFile(path, includeStdLib);
+    data['funcCalls'] = {...data['funcCalls'], ...temp['funcCalls']};
+    data['funcCounts'] = {...data['funcCounts'], ...temp['funcCounts']};
+    data['callCounts'] = {...data['callCounts'], ...temp['callCounts']};
+  }
+
+  console.log(data)
 
   var saveJson = JSON.stringify(data, null, 4);
-  fs.writeFile("./public/data.json", saveJson, "utf8", (err) => {
+  fs.writeFileSync("./public/data.json", saveJson, "utf8", (err) => {
     if (err) {
       console.log(err);
     }
@@ -435,4 +567,4 @@ module.exports = {
   run,
 };
 
-run('./code/optimise.py');
+run("./code/optimise.py", true, true);
