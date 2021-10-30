@@ -103,14 +103,18 @@ function buildNextNode(id, func, groups, classes, counts, colours) {
   } else {
     nextNode = { id: id, label: label, value: counts };
   }
+
+  if (func == 'Utilities.convert_team_name_or_initials') {
+    console.log(func)
+    console.log(nextNode);
+  }
+
   return nextNode;
 }
 
-function globalCall(func) {
-  // Check if function doing the calling is not just a single word (the name of
-  // the python file) which indicates the function was not called from within
-  // any class or function
-  return !func.includes(".");
+function globalCall(callingFunc) {
+  // Check if function was called from outside any function/class
+  return callingFunc == '';
 }
 
 function createEdges(callCounts, nodeIds) {
@@ -123,7 +127,11 @@ function createEdges(callCounts, nodeIds) {
     // No edge will be made -> 'to' may be a floating node
     if (!globalCall(from)) {
       let count = callCounts[func];
+      // console.log('Edge', from, to, { from: nodeIds[from], to: nodeIds[to], value: count })
       e.push({ from: nodeIds[from], to: nodeIds[to], value: count });
+    } else {
+      console.log(from, to, globalCall(from))
+
     }
   }
   let edges = new vis.DataSet(e);
@@ -155,15 +163,15 @@ function createNodes(funcCalls, funcCounts) {
   let n = [];
   for (const callingFunc in funcCalls) {
     // If called function was not called from within another function
-    if (!globalCall(callingFunc)) {
-      // Add defined function as node
-      let count = funcCounts[callingFunc];
+    if (!(callingFunc in nodeIds) && !globalCall(callingFunc)) {
+        // Add defined function as node
+        let count = funcCounts[callingFunc];
 
-      let nextNode = buildNextNode(id, callingFunc, groups, classes, count, colours);
+        let nextNode = buildNextNode(id, callingFunc, groups, classes, count, colours);
 
-      n.push(nextNode);
-      nodeIds[callingFunc] = id;
-      id += 1;
+        n.push(nextNode);
+        nodeIds[callingFunc] = id;
+        id += 1;
     }
 
     // Add any new called functions as nodes
@@ -198,7 +206,7 @@ function createNetwork(nodes, edges, groups) {
       color: { opacity: 0.65, inherit: "from" },
       arrows: { to: { enabled: true, scaleFactor: 0.5 } },
     },
-    nodes: { shape: "dot", value: 0.1, opacity: 0.85, borderWidth: 1 },
+    nodes: { shape: "dot", value: 2, opacity: 0.85, borderWidth: 1 },
   };
 
   new vis.Network(container, data, options); // Displays network

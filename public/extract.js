@@ -129,9 +129,9 @@ function isUpperCase(str) {
 function getClass(stack) {
   let funcsClass = null;
 
-  for (let s of stack) {
-    if (isUpperCase(s.name[0])) {
-      funcsClass = s.name;
+  for (let i = stack.length-1; i>0; i--) {
+    if (isUpperCase(stack[i].name[0])) {
+      funcsClass = stack[i].name;
     }
   }
 
@@ -157,7 +157,7 @@ function insertCalledFunctions(line, funcCalls, stack) {
       for (let s of stack) {
         callingFunc += "." + s.name;
       }
-      callingFunc = callingFunc.slice(1); // Remove dot from beginning
+      callingFunc = callingFunc.slice(2); // Remove dot from beginning
       if (!(callingFunc in funcCalls)) {
         funcCalls[callingFunc] = [];
       }
@@ -165,9 +165,6 @@ function insertCalledFunctions(line, funcCalls, stack) {
 
       // Format called function
       let calledFunc = found[i].groups.calledFunction;
-      if (calledFunc == "predictor.calc_score_prediction") {
-        console.log();
-      }
       calledFunc = calledFunc.replace("self", funcsClass);
       calledFunc = replaceAliases(calledFunc, stack);
 
@@ -218,7 +215,9 @@ function formatStandardLibrary(calledFunc) {
     "remove",
   ];
 
-  let dictFuncs = ["values", "keys"];
+  let dictFuncs = ["values", "keys", "items"];
+
+  let strFuncs = ["split", "upper", "lower", "title", "replace"]
 
   let parts = calledFunc.split(".");
   let func = parts[parts.length - 1];
@@ -226,6 +225,8 @@ function formatStandardLibrary(calledFunc) {
     newCalledFunc = "list." + func;
   } else if (dictFuncs.includes(func)) {
     newCalledFunc = "dict." + func;
+  } else if (strFuncs.includes(func)) {
+    newCalledFunc = "str." + func;
   }
 
   return newCalledFunc;
@@ -378,7 +379,7 @@ function getFuncCalls(lines, path, includeStdLib) {
   let line = null;
   let found = null;
   let funcCalls = {};
-  let stack = [{ type: "global", name: file, aliases: fileImports["aliases"] }];
+  let stack = [{ type: "global", name: '', aliases: fileImports["aliases"] }];
   let indentSize = 4; // Spaces
   let currentIndent = 0;
   for (let index in lines) {
@@ -425,6 +426,13 @@ function getFuncCalls(lines, path, includeStdLib) {
 
     // Look for a called function
     insertCalledFunctions(line, funcCalls, stack);
+  }
+  if ('Utilities' in funcCalls) {
+    for (let i = funcCalls['Utilities'].length-1; i>0; i--) {
+      if (funcCalls['Utilities'][i] == 'rgb') {
+        funcCalls['Utilities'].splice(i,i)
+      } 
+    }
   }
 
   cleanNodes(funcCalls);
@@ -482,29 +490,20 @@ function runFile(path, includeStdLib) {
   let filename = parts[parts.length-1]
   console.log('Extracting:', filename)
 
-  let data = {};
+  let funcCalls = {};
   try {
     let codeFile = fs.readFileSync(path, "utf8").toString();
     codeFile = removeComments(codeFile);
     let lines = codeFile.split("\r\n");
 
-    let funcCalls = getFuncCalls(lines, path, includeStdLib);
-    data["funcCalls"] = funcCalls;
+    funcCalls = getFuncCalls(lines, path, includeStdLib);
 
-    // Get func counts for node size
-    let funcCounts = getFuncCounts(funcCalls);
-    data["funcCounts"] = funcCounts;
-
-    // Get call counts for edge thickness
-    let callCounts = getCallCounts(funcCalls);
-    data["callCounts"] = callCounts;
-
-    console.log('Functions collected:', collected(data))
+    // console.log('Functions collected:', collected(data))
   } catch (e) {
     console.log("Error:", e.stack);
   }
 
-  return data;
+  return funcCalls;
 }
 
 function getImportedFiles(path) {
@@ -531,6 +530,27 @@ function getImportedFiles(path) {
   return importedFiles;
 }
 
+function getVisData(paths, includeStdLib) {
+  // TODO: Improve merging such that same functions defined in different files
+  // Test with optimise.py and utilities.py
+  let funcCalls = {};
+  for (let path of paths) {
+    let newFuncCalls = runFile(path, includeStdLib);
+    funcCalls = {...funcCalls, ...newFuncCalls};
+  }
+
+  // Get func counts for node size
+  let funcCounts = getFuncCounts(funcCalls);
+
+  // Get call counts for edge thickness
+  let callCounts = getCallCounts(funcCalls);
+
+  let data = {'funcCalls': funcCalls, 
+              'funcCounts': funcCounts, 
+              'callCounts': callCounts};
+  return data
+}
+
 function run(filepath, includeImports, includeStdLib) {
   if (includeImports == undefined) {
     includeImports = false;
@@ -545,13 +565,7 @@ function run(filepath, includeImports, includeStdLib) {
     paths = paths.concat(importedFiles);
   }
 
-  let data = {'funcCalls': {}, 'funcCounts': {}, 'callCounts': {}}
-  for (let path of paths) {
-    let temp = runFile(path, includeStdLib);
-    data['funcCalls'] = {...data['funcCalls'], ...temp['funcCalls']};
-    data['funcCounts'] = {...data['funcCounts'], ...temp['funcCounts']};
-    data['callCounts'] = {...data['callCounts'], ...temp['callCounts']};
-  }
+  let data = getVisData(paths, includeStdLib)
 
   console.log(data)
 
