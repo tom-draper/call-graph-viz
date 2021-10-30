@@ -1,6 +1,9 @@
 # Call-Graph-Visualiser
 
 A Python function call graph visualiser.
+
+![Example](https://user-images.githubusercontent.com/41476809/139538280-36b53ec3-65b4-415e-be33-dbb6d0ec932f.png)
+
 ## Usage
 Run the main.js file using node, followed by the Python file to visualise:
 
