@@ -567,7 +567,7 @@ function run(filepath, includeImports, includeStdLib) {
 
   let data = getVisData(paths, includeStdLib)
 
-  console.log(data)
+  // console.log(data)
 
   var saveJson = JSON.stringify(data, null, 4);
   fs.writeFileSync("./public/data.json", saveJson, "utf8", (err) => {
