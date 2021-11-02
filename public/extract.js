@@ -138,13 +138,33 @@ function getClass(stack) {
   return funcsClass;
 }
 
-function replaceAliases(calledFunc, stack) {
-  for (let i = stack.length - 1; i >= 0; i--) {
-    for (let original in stack[i].aliases) {
-      let alias = stack[i].aliases[original];
-      let regex = new RegExp(`\\b${alias}\\b`, "g");
-      calledFunc = calledFunc.replace(regex, original);
-    }
+function replaceAliases(calledFunc, aliases) {
+  for (let original in aliases.fromImports) {
+    let alias = aliases.fromImports[original];
+    let regex = new RegExp(`\\b${alias}\\b`, "g");
+    calledFunc = calledFunc.replace(regex, original);
+  }
+  for (let original in aliases.fromObjVars) {
+    let alias = aliases.fromObjVars[original];
+    let regex = new RegExp(`\\b${alias}\\b`, "g");
+    calledFunc = calledFunc.replace(regex, original);
+  }
+  return calledFunc;
+}
+
+function replaceAliases2(calledFunc, stack) {
+  let aliases = stack[0].aliases.fromImports;
+  for (let original in aliases) {
+    let alias = stack[0].aliases.fromImports[original];
+    let regex = new RegExp(`\\b${alias}\\b`, "g");
+    calledFunc = calledFunc.replace(regex, original);
+  }
+
+  aliases = stack[0].aliases.fromObjVars;
+  for (let original in aliases) {
+    let alias = stack[0].aliases.fromObjVars[original];
+    let regex = new RegExp(`\\b${alias}\\b`, "g");
+    calledFunc = calledFunc.replace(regex, original);
   }
   return calledFunc;
 }
@@ -166,7 +186,6 @@ function insertCalledFunctions(line, funcCalls, stack) {
       // Format called function
       let calledFunc = match[i].groups.calledFunction;
       calledFunc = calledFunc.replace("self", funcsClass);
-      calledFunc = replaceAliases(calledFunc, stack);
 
       funcCalls[callingFunc].push(calledFunc);
     }
@@ -232,12 +251,13 @@ function formatStandardLibrary(calledFunc) {
   return newCalledFunc;
 }
 
-function cleanNodes(nodes) {
+function cleanFuncCalls(nodes, aliases) {
   // Empty parentesis
   for (let func in nodes) {
     for (let i in nodes[func]) {
       nodes[func][i] = emptyParentesis(nodes[func][i]);
       nodes[func][i] = formatStandardLibrary(nodes[func][i]);
+      nodes[func][i] = replaceAliases(nodes[func][i], aliases)
     }
   }
 }
@@ -355,22 +375,18 @@ function removeStdLibFuncs(funcCalls) {
   }
 }
 
-function addAlisesToStack(line, stack) {
+function addAlises(line, aliases) {
   let match = line.match(/(?<alias>[^\s]*) = (?<original>[A-Z][^\s]*)\(/);
   if (match != null) {
-    // stack[stack.length-1].aliases[match.groups.original] = match.groups.alias;
-    // Temporary solution, all aliases are global (at index 0) rather than at
-    // function/class level on stack -> with current stack system, if alias
-    // variable is passed as an argument within Python code, alias will not be
-    // available within called function
     // TODO: Improve such that aliases can be also available in called function
     // where alias is passed as arg
-    stack[0].aliases[match.groups.original] = match.groups.alias;
+    aliases.fromObjVars[match.groups.original] = match.groups.alias;
   }
 }
 
-function getFuncCalls(lines, path, includeStdLib) {
+function getFuncCalls(lines, path, existingAliases, includeStdLib) {
   let fileImports = collectImports(lines);
+  console.log(fileImports['aliases'])
 
   let file = fileText(path);
   const classNameRegex = /class (?<name>[A-Za-z_]+)(\(.*\))?:/;
@@ -379,13 +395,14 @@ function getFuncCalls(lines, path, includeStdLib) {
   let line = null;
   let found = null;
   let funcCalls = {};
-  let stack = [{ type: "global", name: '', aliases: fileImports["aliases"] }];
+  let stack = [{ type: "global", name: '' }];
+  let aliases = { fromImports: fileImports["aliases"], fromObjVars: existingAliases }
   let indentSize = 4; // Spaces
   let currentIndent = 0;
   for (let index in lines) {
     line = lines[index];
 
-    addAlisesToStack(line, stack);
+    addAlises(line, aliases);
 
     // Look for if __name__ == '__main__':
     [currentIndent, found] = lookForIfNameEqualsMain(
@@ -427,6 +444,8 @@ function getFuncCalls(lines, path, includeStdLib) {
     // Look for a called function
     insertCalledFunctions(line, funcCalls, stack);
   }
+
+  // TODO: remove
   if ('Utilities' in funcCalls) {
     for (let i = funcCalls['Utilities'].length-1; i>0; i--) {
       if (funcCalls['Utilities'][i] == 'rgb') {
@@ -435,11 +454,14 @@ function getFuncCalls(lines, path, includeStdLib) {
     }
   }
 
-  cleanNodes(funcCalls);
+  cleanFuncCalls(funcCalls, aliases);
   if (!includeStdLib) {
     removeStdLibFuncs(funcCalls);
   }
-  return funcCalls;
+
+  // Return aliases to be used when extracting any remaining Python files, incase 
+  // they are passed into a function within that file
+  return [funcCalls,  aliases.fromObjVars];
 }
 
 function getFuncCounts(funcCalls) {
@@ -491,14 +513,14 @@ function runFile(path, includeStdLib) {
   console.log('Extracting:', filename)
 
   let funcCalls = {};
+  let aliases = {};
   try {
     let codeFile = fs.readFileSync(path, "utf8").toString();
     codeFile = removeComments(codeFile);
     let lines = codeFile.split("\r\n");
 
-    funcCalls = getFuncCalls(lines, path, includeStdLib);
+    [funcCalls, aliases] = getFuncCalls(lines, path, aliases, includeStdLib);
 
-    // console.log('Functions collected:', collected(data))
   } catch (e) {
     console.log("Error:", e.stack);
   }
