@@ -11,12 +11,12 @@ Run the main.js file using node, followed by the Python file to visualise:
 
 ### Command Line Arguments
 
-#### -imports flag (Boolean)
+#### imports flag (Boolean)
 If available, include Python files imported by the target file. Defaults to true.
 
     node main [filename].py -stdlib false
 
-#### -stdlib flag (Boolean)
+#### stdlib flag (Boolean)
 Include functions of the Python standard library. Defaults to false.
 
     node main [filename].py -imports true
