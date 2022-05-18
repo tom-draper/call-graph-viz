@@ -17,6 +17,6 @@ If available, include Python files imported by the target file. Defaults to true
     node main [filename].py -stdlib false
 
 #### stdlib flag (Boolean)
-Include functions of the Python standard library. Defaults to false.
+Include functions of the Python Standard Library. Defaults to false.
 
     node main [filename].py -imports true
