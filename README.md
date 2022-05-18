@@ -7,16 +7,16 @@ A Python function call graph visualiser tool to help you visualise the complexit
 ## Usage
 Run the main.js file using node, followed by the Python file to visualise:
 
-    node main [filename].py
+    node main <filename>.py
 
 ### Command Line Arguments
 
 #### imports flag (Boolean)
 If available, include Python files imported by the target file. Defaults to true.
 
-    node main [filename].py -stdlib false
+    node main <filename>.py -stdlib false
 
 #### stdlib flag (Boolean)
 Include functions of the Python Standard Library. Defaults to false.
 
-    node main [filename].py -imports true
+    node main <filename>.py -imports true
