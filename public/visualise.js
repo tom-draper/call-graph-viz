@@ -58,9 +58,9 @@ function selectColour(colours) {
   if (colours.length <= 0) {
     colour = randomColor();
   } else {
-    let i = randomInt(0, colours.length-1);
-    colour = colours.splice(i, 1)[0];  // Remove from list
-    console.log(colour, colours)
+    let i = randomInt(0, colours.length - 1);
+    colour = colours.splice(i, 1)[0]; // Remove from list
+    console.log(colour, colours);
   }
   return colour;
 }
@@ -90,7 +90,7 @@ function buildNextNode(id, func, groups, classes, counts, colours) {
     nextNode = { id: id, label: label, group: funcClass, value: counts };
     if (!(funcClass in groups)) {
       let colour = selectColour(colours);
-      console.log(colour)
+      console.log(colour);
       let highlight = newShade(colour, -70);
       groups[funcClass] = {
         useDefaultGroups: true,
@@ -218,9 +218,9 @@ function createNetwork(nodes, edges, groups) {
 }
 
 function visualise(data) {
-  let funcCalls = data["funcCalls"];
-  let funcCounts = data["funcCounts"];
-  let callCounts = data["callCounts"];
+  let funcCalls = data.funcCalls;
+  let funcCounts = data.funcCounts;
+  let callCounts = data.callCounts;
 
   let [nodes, nodeIds, groups, classes] = createNodes(funcCalls, funcCounts);
 

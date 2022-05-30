@@ -12,7 +12,7 @@ function collectImports(lines) {
     if (match != null) {
       let imports = match.groups.import.split(", ");
       for (let _import of imports) {
-        fileImports["importOrigin"][_import] = match.groups.origin;
+        fileImports.importOrigin[_import] = match.groups.origin;
       }
     }
 
@@ -20,13 +20,13 @@ function collectImports(lines) {
     if (match != null) {
       let imports = match.groups.import.split(", ");
       for (let _import of imports) {
-        fileImports["simpleImports"].push(_import);
+        fileImports.simpleImports.push(_import);
       }
     }
 
     match = line.match(aliasImport);
     if (match != null) {
-      fileImports["aliases"][match.groups.import] = match.groups.alias;
+      fileImports.aliases[match.groups.import] = match.groups.alias;
     }
   }
 
@@ -129,7 +129,7 @@ function isUpperCase(str) {
 function getClass(stack) {
   let funcsClass = null;
 
-  for (let i = stack.length-1; i>0; i--) {
+  for (let i = stack.length - 1; i > 0; i--) {
     if (isUpperCase(stack[i].name[0])) {
       funcsClass = stack[i].name;
     }
@@ -236,7 +236,7 @@ function formatStandardLibrary(calledFunc) {
 
   let dictFuncs = ["values", "keys", "items"];
 
-  let strFuncs = ["split", "upper", "lower", "title", "replace"]
+  let strFuncs = ["split", "upper", "lower", "title", "replace"];
 
   let parts = calledFunc.split(".");
   let func = parts[parts.length - 1];
@@ -257,7 +257,7 @@ function cleanFuncCalls(nodes, aliases) {
     for (let i in nodes[func]) {
       nodes[func][i] = emptyParentesis(nodes[func][i]);
       nodes[func][i] = formatStandardLibrary(nodes[func][i]);
-      nodes[func][i] = replaceAliases(nodes[func][i], aliases)
+      nodes[func][i] = replaceAliases(nodes[func][i], aliases);
     }
   }
 }
@@ -386,7 +386,7 @@ function addAlises(line, aliases) {
 
 function getFuncCalls(lines, path, existingAliases, includeStdLib) {
   let fileImports = collectImports(lines);
-  console.log(fileImports['aliases'])
+  console.log(fileImports.aliases);
 
   let file = fileText(path);
   const classNameRegex = /class (?<name>[A-Za-z_]+)(\(.*\))?:/;
@@ -395,8 +395,11 @@ function getFuncCalls(lines, path, existingAliases, includeStdLib) {
   let line = null;
   let found = null;
   let funcCalls = {};
-  let stack = [{ type: "global", name: '' }];
-  let aliases = { fromImports: fileImports["aliases"], fromObjVars: existingAliases }
+  let stack = [{ type: "global", name: "" }];
+  let aliases = {
+    fromImports: fileImports.aliases,
+    fromObjVars: existingAliases,
+  };
   let indentSize = 4; // Spaces
   let currentIndent = 0;
   for (let index in lines) {
@@ -446,11 +449,11 @@ function getFuncCalls(lines, path, existingAliases, includeStdLib) {
   }
 
   // TODO: remove
-  if ('Utilities' in funcCalls) {
-    for (let i = funcCalls['Utilities'].length-1; i>0; i--) {
-      if (funcCalls['Utilities'][i] == 'rgb') {
-        funcCalls['Utilities'].splice(i,i)
-      } 
+  if ("Utilities" in funcCalls) {
+    for (let i = funcCalls.Utilities.length - 1; i > 0; i--) {
+      if (funcCalls.Utilities[i] == "rgb") {
+        funcCalls.Utilities.splice(i, i);
+      }
     }
   }
 
@@ -459,9 +462,9 @@ function getFuncCalls(lines, path, existingAliases, includeStdLib) {
     removeStdLibFuncs(funcCalls);
   }
 
-  // Return aliases to be used when extracting any remaining Python files, incase 
+  // Return aliases to be used when extracting any remaining Python files, incase
   // they are passed into a function within that file
-  return [funcCalls,  aliases.fromObjVars];
+  return [funcCalls, aliases.fromObjVars];
 }
 
 function getFuncCounts(funcCalls) {
@@ -508,9 +511,9 @@ function removeComments(code) {
 }
 
 function runFile(path, includeStdLib) {
-  let parts = path.split('/')
-  let filename = parts[parts.length-1]
-  console.log('Extracting:', filename)
+  let parts = path.split("/");
+  let filename = parts[parts.length - 1];
+  console.log("Extracting:", filename);
 
   let funcCalls = {};
   let aliases = {};
@@ -520,7 +523,6 @@ function runFile(path, includeStdLib) {
     let lines = codeFile.split("\r\n");
 
     [funcCalls, aliases] = getFuncCalls(lines, path, aliases, includeStdLib);
-
   } catch (e) {
     console.log("Error:", e.stack);
   }
@@ -536,7 +538,7 @@ function getImportedFiles(path) {
   } catch (e) {
     console.log("Error:", e.stack);
   }
-  
+
   let matches = [...codeFile.matchAll(/from (?<filename>.*) import/g)];
   for (let match of matches) {
     let filename = match.groups.filename + ".py";
@@ -558,7 +560,7 @@ function getVisData(paths, includeStdLib) {
   let funcCalls = {};
   for (let path of paths) {
     let newFuncCalls = runFile(path, includeStdLib);
-    funcCalls = {...funcCalls, ...newFuncCalls};
+    funcCalls = { ...funcCalls, ...newFuncCalls };
   }
 
   // Get func counts for node size
@@ -567,10 +569,12 @@ function getVisData(paths, includeStdLib) {
   // Get call counts for edge thickness
   let callCounts = getCallCounts(funcCalls);
 
-  let data = {'funcCalls': funcCalls, 
-              'funcCounts': funcCounts, 
-              'callCounts': callCounts};
-  return data
+  let data = {
+    funcCalls: funcCalls,
+    funcCounts: funcCounts,
+    callCounts: callCounts,
+  };
+  return data;
 }
 
 function run(filepath, includeImports, includeStdLib) {
@@ -587,7 +591,7 @@ function run(filepath, includeImports, includeStdLib) {
     paths = paths.concat(importedFiles);
   }
 
-  let data = getVisData(paths, includeStdLib)
+  let data = getVisData(paths, includeStdLib);
 
   // console.log(data)
 
