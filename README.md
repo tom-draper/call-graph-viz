@@ -1,4 +1,4 @@
-# Call-Graph-Visualiser
+# Call Graph Visualiser
 
 A Python function call graph visualiser tool to help you visualise the complexity and structure of your Python programs.
 
