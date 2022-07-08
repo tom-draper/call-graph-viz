@@ -8,9 +8,9 @@ Each node is a Python function and the directed connections drawn between them r
 
 ## Usage
 
-Copy the Python code you wish to visualise into the code directory.
+Copy the Python code you wish to visualise into the <code>/code</code> directory.
 
-Run the main.js file using node, followed by the Python file to visualise:
+Run the <code>main.js</code> file using node, followed by the name of the Python file to visualise:
 
     node main <filename>.py
 
