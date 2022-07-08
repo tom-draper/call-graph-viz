@@ -7,6 +7,9 @@ Each node is a Python function and the directed connections drawn between them r
 ![Example2](https://user-images.githubusercontent.com/41476809/139538596-ed31f372-2c31-4e9a-9bb1-871411bb8a8a.png)
 
 ## Usage
+
+Copy the Python code you wish to visualise into the code directory.
+
 Run the main.js file using node, followed by the Python file to visualise:
 
     node main <filename>.py
