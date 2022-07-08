@@ -2,6 +2,8 @@
 
 A Python function call graph visualiser tool to help you visualise the complexity and structure of your Python programs.
 
+Each node is a Python function and the directed connections drawn between them represent function calls. The thickness of the connection represents the number of times the function call is made. Nodes are colour coded by the class they belong to.
+
 ![Example2](https://user-images.githubusercontent.com/41476809/139538596-ed31f372-2c31-4e9a-9bb1-871411bb8a8a.png)
 
 ## Usage
