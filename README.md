@@ -17,7 +17,7 @@ Run the <code>main.js</code> file using node, followed by the name of the Python
 ### Command Line Arguments
 
 #### imports flag (Boolean)
-If available, include Python files imported by the target file. Defaults to true.
+If available, include other Python files imported by the specified Python file. Defaults to true.
 
     node main <filename>.py -stdlib false
 
