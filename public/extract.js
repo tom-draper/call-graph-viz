@@ -117,8 +117,7 @@ function lookForIfNameEqualsMain(line, stack, currentIndent, indentSize) {
 }
 
 function getCalledFunctions(line) {
-  const calledFuncRegex = /(?<calledFunction>[A-Za-z0-9_.]*[A-Za-z_]+)\(/;
-  // const calledFuncRegex = /(?<calledFunction>([a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?))/;
+  const calledFuncRegex = /(?<calledFunction>[A-Za-z0-9_.]*[A-Za-z_]+)\(/g;
   return [...line.matchAll(calledFuncRegex)];
 }
 
@@ -146,23 +145,6 @@ function replaceAliases(calledFunc, aliases) {
   }
   for (let original in aliases.fromObjVars) {
     let alias = aliases.fromObjVars[original];
-    let regex = new RegExp(`\\b${alias}\\b`, "g");
-    calledFunc = calledFunc.replace(regex, original);
-  }
-  return calledFunc;
-}
-
-function replaceAliases2(calledFunc, stack) {
-  let aliases = stack[0].aliases.fromImports;
-  for (let original in aliases) {
-    let alias = stack[0].aliases.fromImports[original];
-    let regex = new RegExp(`\\b${alias}\\b`, "g");
-    calledFunc = calledFunc.replace(regex, original);
-  }
-
-  aliases = stack[0].aliases.fromObjVars;
-  for (let original in aliases) {
-    let alias = stack[0].aliases.fromObjVars[original];
     let regex = new RegExp(`\\b${alias}\\b`, "g");
     calledFunc = calledFunc.replace(regex, original);
   }
@@ -606,5 +588,3 @@ function run(filepath, includeImports, includeStdLib) {
 module.exports = {
   run,
 };
-
-// run("./code/optimise.py", true, true);
