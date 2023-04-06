@@ -10,18 +10,30 @@ Each node is a Python function and the directed connections drawn between them r
 
 Copy the Python code you wish to visualise into the <code>/code</code> directory.
 
+Install npm dependencies
+
+```bash
+npm install
+```
+
 Run the <code>main.js</code> file using node, followed by the name of the Python file to visualise:
 
-    node main <filename>.py
+```bash
+node main <filename>.py
+```
 
 ### Command Line Arguments
 
 #### imports flag (Boolean)
 If available, include other Python files imported by the specified Python file. Defaults to true.
 
-    node main <filename>.py -stdlib false
+```bash
+node main <filename>.py -stdlib false
+```
 
 #### stdlib flag (Boolean)
 Include functions of the Python Standard Library. Defaults to false.
 
-    node main <filename>.py -imports true
+```bash
+node main <filename>.py -imports true
+```
