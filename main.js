@@ -9,7 +9,7 @@ function getFilePath() {
     console.log(
       'Using default main.py\nRun "node main [filename].py" to specify a file within the code directory'
     );
-    file = "optimise.py";
+    file = "main.py";
   }
 
   // Add .py if missing
